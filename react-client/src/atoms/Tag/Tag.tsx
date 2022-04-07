@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Multiply } from '../Icons';
 
 export interface TagProps {
   title: string;
@@ -12,10 +13,10 @@ export const Tag: React.FC<TagProps> = ({
   color,
   onClose,
 }: TagProps) => {
-    //@TODO: replace x by close icon
   return (
     <TagWrapper color={color} onClick={onClose}>
-      <Title>{title}</Title>x
+      <Title>{title}</Title>
+      <Multiply width={12} fill={color} />
     </TagWrapper>
   );
 };
@@ -35,4 +36,5 @@ const TagWrapper = styled.div<{ color: string }>`
 const Title = styled.div`
   font-size: 12px;
   font-weight: 500;
+  margin-right: 4px;
 `;

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import styled from 'styled-components';
+import { COLORS } from '../colors';
 
 export interface AvatarProps {
   image: string;
@@ -36,6 +37,11 @@ const Image = styled.img`
 
 const Icon = styled.div`
   width: 24px;
+  height: 24px;
+  padding: 4px;
+  box-sizing: content-box;
+  border-radius: 50%;
+  background-color: ${COLORS.primary100};
   position: absolute;
   bottom: 12px;
   right: 0;

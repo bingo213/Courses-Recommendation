@@ -4,6 +4,10 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 export default {
   title: 'atoms/Tag',
   component: Tag,
+  argTypes: {
+    title: {defaultValue: 'This is a tag'},
+    color: {defaultValue: '#2E86C1'}
+  }
 } as ComponentMeta<typeof Tag>;
 
 const Template: ComponentStory<typeof Tag> = args => (

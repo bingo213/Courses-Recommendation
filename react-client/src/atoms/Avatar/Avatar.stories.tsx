@@ -1,5 +1,7 @@
 import { Avatar } from './Avatar';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Photo } from '../Icons';
+import { COLORS } from '../colors';
 
 export default {
   title: 'atoms/Avatar',
@@ -12,7 +14,7 @@ export default {
     icon: {
       control: 'radio',
       options: ['icon', 'none'],
-      mapping: { icon: <p>T</p>, none: undefined },
+      mapping: { icon: <Photo width={25} fill={COLORS.textSecondary} />, none: undefined },
     },
   },
 } as ComponentMeta<typeof Avatar>;
