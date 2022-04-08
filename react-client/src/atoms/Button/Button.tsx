@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { COLORS } from '../colors';
 
 export interface ButtonProps {
-  text: string;
+  children: string;
   block?: boolean;
   width?: number;
   height?: number;
@@ -12,12 +12,12 @@ export interface ButtonProps {
 }
 
 export const Button: React.FC<ButtonProps> = ({
-  text,
   block,
   width = 200,
   height = 36,
   borderRadius = 4,
-  onClick
+  onClick,
+  children
 }: ButtonProps) => {
   return (
     <Wrapper
@@ -27,7 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
       block={block}
       onClick={onClick}
     >
-      <Text>{text}</Text>
+      <Text>{children}</Text>
     </Wrapper>
   );
 };

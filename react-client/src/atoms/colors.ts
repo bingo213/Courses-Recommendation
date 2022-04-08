@@ -7,4 +7,5 @@ export const COLORS = {
   line200: '#ACACAC',
   textPrimary: '#393939',
   textSecondary: '#727272',
+  placeholder: '#BCBEBF',
 };
