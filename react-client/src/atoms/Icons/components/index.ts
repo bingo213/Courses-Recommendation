@@ -7,3 +7,4 @@ export { default as House } from "./House";
 export { default as Logout } from "./Logout";
 export { default as Multiply } from "./Multiply";
 export { default as Photo } from "./Photo";
+export { default as Tick } from "./Tick";

@@ -14,7 +14,13 @@ export const Tag: React.FC<TagProps> = ({
   onClose,
 }: TagProps) => {
   return (
-    <TagWrapper color={color} onClick={onClose}>
+    <TagWrapper
+      color={color}
+      onClick={e => {
+        e.stopPropagation();
+        onClose && onClose();
+      }}
+    >
       <Title>{title}</Title>
       <Multiply width={12} fill={color} />
     </TagWrapper>
@@ -31,6 +37,7 @@ const TagWrapper = styled.div<{ color: string }>`
   color: ${p => p.color};
   border: 1px solid ${p => p.color};
   padding: 0 8px;
+  cursor: pointer;
 `;
 
 const Title = styled.div`
