@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { CSSProperties } from 'styled-components';
 import { COLORS } from '../../../atoms';
 
 export interface DropdownItemProps {
   label: string;
-  icon?: React.ReactElement;
+  prefixIcon?: React.ReactElement;
+  suffixIcon?: React.ReactElement;
   active?: boolean;
   hasDivider?: boolean;
   onClick?: () => void;
+  style?: CSSProperties;
 }
 
 interface WrapperProps {
@@ -18,7 +20,8 @@ interface WrapperProps {
 
 export const DropdownItem: React.FC<DropdownItemProps> = ({
   label,
-  icon,
+  prefixIcon,
+  suffixIcon,
   hasDivider = false,
   active = false,
   onClick,
@@ -38,27 +41,41 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
       onMouseLeave={() => setHover(false)}
       {...rest}
     >
-      {icon && (
-        <span style={{display: 'inline-block', marginRight: 12}}>
-          {React.cloneElement(icon, {
-            width: 24,
-            ...(active && !hover ? { fill: 'white' } : {fill: COLORS.textSecondary}),
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {prefixIcon && (
+          <span style={{ display: 'inline-block', marginRight: 12 }}>
+            {React.cloneElement(prefixIcon, {
+              width: prefixIcon?.props?.width || 24,
+              ...(active && !hover
+                ? { fill: 'white' }
+                : { fill: COLORS.textSecondary }),
+            })}
+          </span>
+        )}
+        <Label>{label}</Label>
+      </div>
+      {suffixIcon && (
+        <span style={{ display: 'inline-block', marginRight: 12 }}>
+          {React.cloneElement(suffixIcon, {
+            width: suffixIcon?.props?.width || 24,
+            ...(active && !hover
+              ? { fill: 'white' }
+              : { fill: COLORS.textSecondary }),
           })}
         </span>
       )}
-      <Label>
-        {label}
-      </Label>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div<WrapperProps>(
-  (props: WrapperProps) => 
+  (props: WrapperProps) =>
     `
+  cursor: pointer;
   background-color: white;
   padding: 12px 16px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   position: relative;
   ${
@@ -95,4 +112,4 @@ const Wrapper = styled.div<WrapperProps>(
 `
 );
 
-const Label = styled.div``
+const Label = styled.div``;

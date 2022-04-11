@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
-import styled from 'styled-components';
+import styled, { CSSProperties } from 'styled-components';
 import { getArrowClassName } from './helper';
 
 type Placement =
@@ -26,6 +26,7 @@ export interface DropdownProps {
   placement?: Placement;
   showArrow?: boolean;
   trigger?: 'click' | 'hover';
+  style?: CSSProperties;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -91,6 +92,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         style={{ ...styles.popper }}
         {...attributes.popper}
         {...rest}
+        className='dropdown-menu'
       >
         {showArrow && (
           <StyledArrow
@@ -110,7 +112,7 @@ interface DropdownMenuProps {
   show: boolean;
 }
 
-const DropdownMenu = styled.span<DropdownMenuProps>`
+const DropdownMenu = styled.div<DropdownMenuProps>`
   background-color: white;
   padding: 4px;
   border-radius: 4px;

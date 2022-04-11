@@ -10,7 +10,13 @@ export default {
   argTypes: {
     label: { defaultValue: 'Label' },
     onClick: { control: { disable: true } },
-    icon: {
+    prefixIcon: {
+      control: 'select',
+      options: ['icon', 'none'],
+      mapping: { icon: <Account width={24} />, none: undefined },
+      table: { type: { summary: 'React.ReactElement' } },
+    },
+    suffixIcon: {
       control: 'select',
       options: ['icon', 'none'],
       mapping: { icon: <Account width={24} />, none: undefined },
