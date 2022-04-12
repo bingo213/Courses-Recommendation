@@ -23,8 +23,8 @@ export const Avatar: React.FC<AvatarProps> = ({
 
 const Wrapper = styled.div<{ size: string }>(
   ({ size }) => `
-    width: ${size === 'small' ? 50 : 120}px;
-    height: ${size === 'small' ? 50 : 120}px;
+    width: ${size === 'small' ? 36 : 120}px;
+    height: ${size === 'small' ? 36 : 120}px;
     position: relative;
 `
 );

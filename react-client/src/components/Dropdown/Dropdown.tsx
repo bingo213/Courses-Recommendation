@@ -118,6 +118,7 @@ const DropdownMenu = styled.div<DropdownMenuProps>`
   border-radius: 4px;
   visibility: ${props => (props.show ? 'visible' : 'hidden')};
   transition: visibility 0.3s;
+  position: absolute;
 `;
 
 const StyledArrow = styled.div`

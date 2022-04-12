@@ -73,7 +73,8 @@ const Wrapper = styled.div<WrapperProps>(
     `
   cursor: pointer;
   background-color: white;
-  padding: 12px 16px;
+  height: 40px;
+  padding-left: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;

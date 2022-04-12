@@ -1,4 +1,10 @@
 {
   "test": "test_en",
-  "CourseRecommend": "Course Recommend"
+  "CourseRecommend": "Course Recommend",
+  "Logout": "Log out",
+  "CoursesRecommend": "Courses recommend",
+  "PredictGrade": "Predict grade",
+  "MyGrade": "My grade",
+  "AccountSetting": "Account setting",
+  "LearnMoreEffectively": "Learn more effectively"
 }

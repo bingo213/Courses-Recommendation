@@ -1,4 +1,6 @@
 import React, { ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { COLORS } from '../../atoms';
 import { APP_NAME, LOGO } from '../../constants';
@@ -6,19 +8,23 @@ import { APP_NAME, LOGO } from '../../constants';
 export interface NavElement {
   icon: ReactElement;
   title: string;
+  link?: string;
 }
 export interface SideBarProps {
   navItems: NavElement[];
-  onClick?: () => void;
+  activeNavIndex?: number;
+  className?: string;
 }
 
 export const SideBar: React.FC<SideBarProps> = ({
   navItems,
-  onClick,
+  className,
+  activeNavIndex = 0,
 }: SideBarProps) => {
-  const [activeNav, setActiveNav] = useState(0);
+  const [activeNav, setActiveNav] = useState(activeNavIndex);
+  const {t} = useTranslation()
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <Logo>
         <Image src={LOGO} />
         <AppName>{APP_NAME}</AppName>
@@ -26,15 +32,13 @@ export const SideBar: React.FC<SideBarProps> = ({
       <NavWrapper>
         {navItems.map((nav, index) => (
           <NavItem
+            to={nav?.link || ''}
             key={index}
-            onClick={() => {
-              setActiveNav(index);
-              onClick && onClick();
-            }}
             className={index === activeNav ? 'active' : ''}
+            onClick={() => setActiveNav(index)}
           >
             {React.cloneElement(nav.icon, { className: 'nav-icon' })}
-            <Title className="nav-title">{nav.title}</Title>
+            <Title className="nav-title">{t(nav.title)}</Title>
           </NavItem>
         ))}
       </NavWrapper>
@@ -63,14 +67,15 @@ const AppName = styled.div`
 
 const NavWrapper = styled.div``;
 
-const NavItem = styled.div`
+const NavItem = styled(Link)`
   display: flex;
   align-items: center;
   padding: 6px 12px;
   margin-bottom: 6px;
   border-radius: 4px;
   cursor: pointer;
-  &:hover, &.active {
+  &:hover,
+  &.active {
     background: ${COLORS.primary100};
     .nav-icon {
       fill: ${COLORS.primary600};
