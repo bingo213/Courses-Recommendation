@@ -6,15 +6,17 @@ export interface AvatarProps {
   image: string;
   size: 'small' | 'large';
   icon?: ReactElement;
+  className?: string;
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
   image,
   size = 'small',
   icon,
+  ...rest
 }: AvatarProps) => {
   return (
-    <Wrapper size={size}>
+    <Wrapper size={size} {...rest}>
       <Image src={image} />
       {icon && <Icon>{icon}</Icon>}
     </Wrapper>

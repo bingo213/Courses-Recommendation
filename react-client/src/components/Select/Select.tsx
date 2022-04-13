@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { CSSProperties } from 'styled-components';
 import { COLORS, Tag, TAG_COLOR } from '../../atoms';
 import { AngleDown, Tick } from '../../atoms/Icons';
 
@@ -16,6 +16,7 @@ export interface SelectProps {
   required?: boolean;
   maxPerView?: number;
   onSelect?: (option: OptionProps) => void;
+  style?: CSSProperties;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -25,6 +26,7 @@ export const Select: React.FC<SelectProps> = ({
   required,
   onSelect,
   maxPerView,
+  ...rest
 }: SelectProps) => {
   const [activeOptions, setActiveOptions] = useState<OptionProps[]>([]);
   const [show, setShow] = useState(false);
@@ -51,7 +53,7 @@ export const Select: React.FC<SelectProps> = ({
     }
   };
   return (
-    <Wrapper>
+    <Wrapper {...rest}>
       {label && (
         <Label>
           {label}
@@ -116,7 +118,7 @@ const Field = styled.div`
 
 const ActiveOptions = styled.div`
   width: 100%;
-  min-height: 34px;
+  min-height: 33px;
   padding: 6px 0px;
   display: flex;
   flex-wrap: wrap;

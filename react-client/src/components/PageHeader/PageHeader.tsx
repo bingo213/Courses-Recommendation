@@ -4,8 +4,8 @@ import { AngleDown, Avatar, COLORS, Logout } from '../../atoms';
 import { REGIONS } from '../../constants';
 import { useLanguage } from '../../hooks';
 import { Dropdown, DropdownItem } from '../Dropdown';
-import defaultAvatar from '../../assets/default_avatar.png';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 export interface PageHeaderProps {
   title: string;
@@ -41,11 +41,13 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   );
   const userMenu = (
     <>
-      <DropdownItem
-        label={t('Logout')}
-        prefixIcon={<Logout width={24} fill={COLORS.textSecondary} />}
-        style={{ width: 150 }}
-      />
+      <Link to="/login">
+        <DropdownItem
+          label={t('Logout')}
+          prefixIcon={<Logout width={24} fill={COLORS.textSecondary} />}
+          style={{ width: 150 }}
+        />
+      </Link>
     </>
   );
   return (
@@ -54,7 +56,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         <Title>{title}</Title>
         {subTitle && <SubTitle>{subTitle}</SubTitle>}
       </Left>
-
       <Right>
         <Dropdown
           menu={localizationMenu}
@@ -75,7 +76,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               avatar ? (
                 <Avatar image={avatar} size="small" />
               ) : (
-                <Avatar size="small" image={defaultAvatar} />
+                <Avatar
+                  size="small"
+                  image="https://chiase24.com/wp-content/uploads/2022/02/tang-hap-hanh-anh-avatar-hai-haeac-nhan-la-ba_t-caea_i-1.jpg"
+                />
               )
             }
             suffixIcon={<AngleDown width={24} fill={COLORS.textSecondary} />}
@@ -95,9 +99,12 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 24px;
 `;
 
-const Title = styled.h2``;
+const Title = styled.h3`
+  font-size: 26px;
+`;
 
 const SubTitle = styled.p`
   color: ${COLORS.textSecondary};

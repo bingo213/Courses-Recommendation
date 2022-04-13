@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { CSSProperties } from 'styled-components';
 import { COLORS } from '../colors';
 
 export interface ButtonProps {
@@ -8,7 +8,10 @@ export interface ButtonProps {
   width?: number;
   height?: number;
   borderRadius?: number;
+  type?: 'button' | 'reset' | 'submit';
   onClick?: () => void;
+  style?: CSSProperties;
+  className?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -17,7 +20,9 @@ export const Button: React.FC<ButtonProps> = ({
   height = 36,
   borderRadius = 4,
   onClick,
-  children
+  type = 'button',
+  children,
+  ...rest
 }: ButtonProps) => {
   return (
     <Wrapper
@@ -26,6 +31,8 @@ export const Button: React.FC<ButtonProps> = ({
       borderRadius={borderRadius}
       block={block}
       onClick={onClick}
+      type={type}
+      {...rest}
     >
       <Text>{children}</Text>
     </Wrapper>
@@ -39,16 +46,25 @@ interface WrapperProps {
   block?: boolean;
 }
 
-const Wrapper = styled.div<WrapperProps>(
+const Wrapper = styled.button<WrapperProps>(
   ({ width, height, borderRadius, block }: WrapperProps) => `
   background: ${COLORS.primary500};
   width: ${width}px;
   height: ${height}px;
+  cursor: pointer;
   border-radius: ${borderRadius}px;
   ${block ? 'width: 100%;' : ''}
   display: flex;
   justify-content: center;
   align-items: center;
+  outline: none;
+  border: none;
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    background: #6b4fc0;
+  }
 `
 );
 

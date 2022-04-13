@@ -5,7 +5,6 @@ import {
   Routes,
   Route,
   Outlet,
-  useParams,
   useLocation,
 } from 'react-router-dom';
 import styled from 'styled-components';
@@ -15,11 +14,6 @@ import { PageHeader } from './components/PageHeader';
 import { routes } from './config';
 import { SIDE_BAR } from './constants';
 import { Login, NotFound } from './pages';
-
-interface AppMainLayoutProps {
-  title: string;
-  activeNavIndex: number;
-}
 
 const AppMainLayout: React.FC = () => {
   const location = useLocation();
@@ -35,7 +29,9 @@ const AppMainLayout: React.FC = () => {
       />
       <Main>
         <PageHeader
-          title={t(SIDE_BAR.find(e => e?.link && path.includes(e.link))?.title || '')}
+          title={t(
+            SIDE_BAR.find(e => e?.link && path.includes(e.link))?.title || ''
+          )}
           username="Bingo"
           subTitle={t('LearnMoreEffectively')}
         />
@@ -47,18 +43,19 @@ const AppMainLayout: React.FC = () => {
 
 export const App: React.FC<{}> = () => {
   const accountRoutes = routes.filter(
-    route => route.path === '/sign_up' || route.path === '/login'
+    route => route.path === 'sign_up' || route.path === 'login'
   );
   const mainRoutes = routes.filter(
-    route => route.path !== '/sign_up' && route.path !== '/login'
+    route => route.path !== 'sign_up' && route.path !== 'login'
   );
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />}></Route>
-        {accountRoutes.map((route, index) => (
-          <Route key={index} path={route.path} element={route.component} />
-        ))}
+        <Route path="/" element={<Login />}>
+          {accountRoutes.map((route, index) => (
+            <Route key={index} path={route.path} element={route.component} />
+          ))}
+        </Route>
         <Route path="user" element={<AppMainLayout />}>
           {mainRoutes.map((route, index) => (
             <Route key={index} path={route.path} element={route.component} />
@@ -81,5 +78,6 @@ const StyledSideBar = styled(SideBar)`
 
 const Main = styled.div`
   margin-left: 250px;
-  padding: 12px 24px;
+  padding: 12px 32px;
+  overflow-x: hidden;
 `;

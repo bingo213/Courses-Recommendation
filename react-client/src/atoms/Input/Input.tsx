@@ -9,7 +9,7 @@ export interface InputProps {
   label?: string;
   note?: string;
   type: 'text' | 'number' | 'password';
-  value: string | number;
+  value?: string | number;
   onChange?: (value?: string | number) => void;
   style?: CSSProperties;
 }
@@ -23,10 +23,10 @@ export const Input: React.FC<InputProps> = ({
   type,
   value,
   onChange,
-  style,
+  ...rest
 }: InputProps) => {
   return (
-    <Wrapper style={style}>
+    <Wrapper {...rest}>
       {label && (
         <Label>
           {label}
@@ -61,7 +61,6 @@ const StyledInput = styled.input<{ variant: 'line' | 'box' }>(
   outline: none;
   border: none;
   width: 100%;
-  font-weight: 300;
   &::placeholder {
     color: ${COLORS.placeholder};
   }

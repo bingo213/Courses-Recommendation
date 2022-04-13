@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { COLORS, ProgressBar, Tag } from '../../atoms';
+import { COLORS, ProgressBar, Tag, TagProps } from '../../atoms';
 
 export interface TableRowProps {
   courseId: string;
   courseName: string;
   grade: number;
-  orientation?: string;
+  orientation?: TagProps;
   gradeConversion?: 'A+' | 'A' | 'B+' | 'B' | 'C+' | 'C' | 'D+' | 'D' | 'F';
 }
 
@@ -39,10 +39,7 @@ export const Table: React.FC<TableProps> = ({ columns, data }: TableProps) => {
             </TableData>
             {val?.orientation && (
               <TableData className="td-2">
-                <Tag
-                  color={`rgb(${rand256()} ${rand256()} ${rand256()})`}
-                  title={val.orientation}
-                />
+                <Tag {...val.orientation} />
               </TableData>
             )}
             {val?.gradeConversion && (

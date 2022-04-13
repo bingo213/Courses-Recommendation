@@ -5,7 +5,7 @@ export default {
   title: 'atoms/Button',
   component: Button,
   argTypes: {
-    text: { defaultValue: 'Button' },
+    children: { defaultValue: 'Button', control: 'text' },
   },
 } as ComponentMeta<typeof Button>;
 
