@@ -19,15 +19,13 @@ class Account(db.Model):
 class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.String(10), primary_key=True)
-    courseNameEn = db.Column(db.String(100), nullable=False)
-    courseNameVi = db.Column(db.String(100), nullable=False)
+    courseNameName = db.Column(db.String(100), nullable=False)
     orientation = db.Column(db.String(10), db.ForeignKey('orientation.id'), nullable=True) 
 
 class Orientation(db.Model):
     __tablename__ = 'orientation'
     id = db.Column(db.String(10), primary_key=True)
-    orientationEn = db.Column(db.String(100), nullable=False) 
-    orientationVi = db.Column(db.String(100), nullable=False)
+    orientationName = db.Column(db.String(100), nullable=False)
 
 class Grade(db.Model):
     __tablename__ = 'grade'
