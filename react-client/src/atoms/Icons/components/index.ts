@@ -3,6 +3,7 @@ export { default as AngleDown } from "./AngleDown";
 export { default as Clipboard } from "./Clipboard";
 export { default as Eye } from "./Eye";
 export { default as GrowthGraph } from "./GrowthGraph";
+export { default as HiddenEye } from "./HiddenEye";
 export { default as House } from "./House";
 export { default as Logout } from "./Logout";
 export { default as Multiply } from "./Multiply";

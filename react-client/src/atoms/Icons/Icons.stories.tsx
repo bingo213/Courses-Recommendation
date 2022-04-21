@@ -11,6 +11,7 @@ import {
   Logout,
   Multiply,
   Photo,
+  HiddenEye
 } from './components';
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -33,6 +34,7 @@ export const Default: Story = args => {
     Logout,
     Multiply,
     Photo,
+    HiddenEye
   ];
   return (
     <Wrapper>
@@ -47,7 +49,7 @@ export const Default: Story = args => {
           }}
         >
           <Comp {...args} />
-          <p>{Comp.name}</p>
+          <p>{Comp.name.slice(3)}</p>
         </div>
       ))}
     </Wrapper>

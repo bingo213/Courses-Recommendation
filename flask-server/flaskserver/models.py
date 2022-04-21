@@ -12,23 +12,23 @@ class Student(db.Model):
 class Account(db.Model):
     __tablename__ = 'account'
     username = db.Column(db.String(20), unique=True, index=True, nullable=False, primary_key=True)
-    user_id = db.Column(db.String(8), db.ForeignKey('student.id'), nullable=False)
+    userId = db.Column(db.String(8), db.ForeignKey('student.id'), nullable=False)
     password = db.Column(db.String(128), nullable=False)
     avatar = db.Column(db.String(500))
 
 class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.String(10), primary_key=True)
-    courseNameName = db.Column(db.String(100), nullable=False)
-    orientation = db.Column(db.String(10), db.ForeignKey('orientation.id'), nullable=True) 
+    courseName = db.Column(db.String(100), nullable=False)
+    orientation = db.Column(db.String(100), nullable=True) 
 
-class Orientation(db.Model):
-    __tablename__ = 'orientation'
-    id = db.Column(db.String(10), primary_key=True)
-    orientationName = db.Column(db.String(100), nullable=False)
+# class Orientation(db.Model):
+#     __tablename__ = 'orientation'
+#     id = db.Column(db.String(10), primary_key=True)
+#     orientationName = db.Column(db.String(100), nullable=False)
 
 class Grade(db.Model):
     __tablename__ = 'grade'
-    student_id = db.Column(db.String(8), db.ForeignKey('student.id'), nullable=False, primary_key=True)
-    course_id = db.Column(db.String(10), db.ForeignKey('course.id'), nullable=False, primary_key=True)
+    studentId = db.Column(db.String(8), db.ForeignKey('student.id'), nullable=False, primary_key=True)
+    courseId = db.Column(db.String(10), db.ForeignKey('course.id'), nullable=False, primary_key=True)
     grade = db.Column(db.Float)

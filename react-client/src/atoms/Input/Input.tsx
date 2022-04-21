@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import styled, { CSSProperties } from 'styled-components';
 import { COLORS } from '../colors';
+import { Eye, HiddenEye } from '../Icons';
 
 export interface InputProps {
   variant?: 'box' | 'line';
@@ -25,6 +26,8 @@ export const Input: React.FC<InputProps> = ({
   onChange,
   ...rest
 }: InputProps) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const showPasswordIcon = useRef(type === 'password');
   return (
     <Wrapper {...rest}>
       {label && (
@@ -35,19 +38,47 @@ export const Input: React.FC<InputProps> = ({
           )}
         </Label>
       )}
-      <StyledInput
-        type={type}
-        value={value}
-        onChange={e => onChange && onChange(e.target.value)}
-        variant={variant}
-        placeholder={placeholder}
-      />
+      <InputWrapper
+        className={type === 'password' && showPassword ? 'show-pass' : ''}
+      >
+        <StyledInput
+          type={showPasswordIcon && showPassword ? 'text' : type}
+          value={value}
+          onChange={e => onChange && onChange(e.target.value)}
+          variant={variant}
+          placeholder={placeholder}
+        />
+        {showPasswordIcon.current && (
+          <Icon onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? (
+              <HiddenEye width={18} fill={COLORS.placeholder} />
+            ) : (
+              <Eye width={18} fill={COLORS.placeholder} />
+            )}
+          </Icon>
+        )}
+      </InputWrapper>
       {note && <Note>{note}</Note>}
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div``;
+
+const InputWrapper = styled.div`
+  position: relative;
+  &.show-pass input[type='password'] {
+    -webkit-text-security: none;
+  }
+`;
+
+const Icon = styled.div`
+  position: absolute;
+  right: 12px;
+  bottom: 2px;
+  cursor: pointer;
+  padding: 6px;
+`;
 
 const Label = styled.div`
   font-size: 14px;
