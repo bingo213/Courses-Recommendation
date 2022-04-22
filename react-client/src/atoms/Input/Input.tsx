@@ -38,9 +38,7 @@ export const Input: React.FC<InputProps> = ({
           )}
         </Label>
       )}
-      <InputWrapper
-        className={type === 'password' && showPassword ? 'show-pass' : ''}
-      >
+      <InputWrapper>
         <StyledInput
           type={showPasswordIcon && showPassword ? 'text' : type}
           value={value}
@@ -67,9 +65,6 @@ const Wrapper = styled.div``;
 
 const InputWrapper = styled.div`
   position: relative;
-  &.show-pass input[type='password'] {
-    -webkit-text-security: none;
-  }
 `;
 
 const Icon = styled.div`
