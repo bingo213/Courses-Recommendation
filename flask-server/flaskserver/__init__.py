@@ -3,9 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hardsecretkey'
+CORS(app, resources={r'*': {'origins': 'http://localhost:3000'}})
 
 #SqlAlchemy Database Configuration With MySql
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:21032000@localhost/course_recommend?charset=utf8'

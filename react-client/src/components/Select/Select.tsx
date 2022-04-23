@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled, { CSSProperties } from 'styled-components';
-import { COLORS, Tag, TAG_COLOR } from '../../atoms';
+import { COLORS, Tag } from '../../atoms';
 import { AngleDown, Tick } from '../../atoms/Icons';
 
 export interface OptionProps {

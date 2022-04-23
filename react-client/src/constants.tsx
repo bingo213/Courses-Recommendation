@@ -10,6 +10,7 @@ export const LOGO = logo;
 
 export const LOCAL_STORAGE = {
   LOCALIZATION: 'localization',
+  TOKEN: 'token'
 };
 
 export const REGIONS: IRegion = {

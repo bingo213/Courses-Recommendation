@@ -4,9 +4,38 @@ import styled from 'styled-components';
 import statisticIllutration from '../assets/statistic_illutration.png';
 import { Button, COLORS, Input } from '../atoms';
 import { LOGO } from '../constants';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { userApi } from '../apis';
+import { useToken } from '../hooks';
+import { useLocation, useNavigate } from 'react-router';
+
+type FormValues = {
+  username: string;
+  password: string;
+};
 
 export const Login: React.FC = () => {
   const { t } = useTranslation();
+  const { setToken } = useToken();
+  const navigate = useNavigate();
+  const location = useLocation() as any;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
+  const onSubmit: SubmitHandler<FormValues> = data => {
+    userApi
+      .login(data)
+      .then(userInfo => {
+        setToken(userInfo.token);
+        if (location?.state?.from) navigate(location.state.from);
+        else navigate('/user/predict');
+      })
+      .catch(error => console.log(error.response.data));
+  };
+
   return (
     <Wrapper>
       <Main>
@@ -19,9 +48,31 @@ export const Login: React.FC = () => {
               {t('WelcomeBack.PleaseEnterAllInformationBelow.')}
             </SubTitle>
           </Head>
-          <Form>
-            <StyledInput label={t('Username')} type="text" variant="box" />
-            <StyledInput label={t('Password')} type="password" variant="box" />
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <StyledInput
+              label={t('Username')}
+              type="text"
+              variant="box"
+              {...register('username', { required: true })}
+              name="username"
+              errorMessage={
+                errors?.username?.type === 'required'
+                  ? t('ThisIsRequiredField')
+                  : undefined
+              }
+            />
+            <StyledInput
+              label={t('Password')}
+              type="password"
+              variant="box"
+              {...register('password', { required: true })}
+              name="password"
+              errorMessage={
+                errors?.password?.type === 'required'
+                  ? t('ThisIsRequiredField')
+                  : undefined
+              }
+            />
             <div style={{ padding: '12px 0 32px 0' }}>
               <Button block type="submit">
                 {t('Login')}

@@ -8,6 +8,7 @@ export const COLORS = {
   textPrimary: '#393939',
   textSecondary: '#727272',
   placeholder: '#BCBEBF',
+  error: '#E74C3C',
 };
 
 export const TAG_COLOR = [
@@ -39,5 +40,5 @@ export const TAG_COLOR = [
   '#DD2C00',
   '#607D8B',
   '#FFEE58',
-  '#DCE775'
+  '#DCE775',
 ];

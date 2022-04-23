@@ -1,5 +1,4 @@
 {
-  "test": "test_en",
   "CourseRecommend": "Course Recommend",
   "Logout": "Log out",
   "CoursesRecommend": "Courses recommend",
@@ -16,6 +15,8 @@
   "Predict": "Precict",
   "GradeAverage": "Grade average",
   "GradeDistribution": "Grade distribution",
+  "Username": "Username",
+  "Password": "Password",
   "FullName": "Full name",
   "PersonalInfomation": "Personal infomation",
   "ChangePassword": "Change password",
@@ -106,5 +107,7 @@
   "MacroEconomics1": "Macro Economics 1",
   "AuditingPrinciples": "Auditing Principles",
   "BranchRelationsAndResourceAdministration": "Branch Relations and Resource Administration",
-  "GraduationThesis": "Graduation Thesis"
+  "GraduationThesis": "Graduation Thesis",
+  "ThisIsRequiredField": "This is required field",
+  "MaxLengthIs{{max}}": "Max length is {{max}}"
 }

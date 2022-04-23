@@ -28,6 +28,7 @@ export const Recommend: React.FC = () => {
       <StyledForm>
         <Field>
           <Input
+            name="numberOfCourses"
             type="number"
             label={t('NumberOfCourses')}
             note={t('InputNumberYouWantToSuggest{{min}}-{{max}}', {

@@ -7,3 +7,8 @@ export interface IRegionItem {
   export interface IRegion {
     [key: string]: IRegionItem;
   }
+
+  export interface ILogin {
+    username: string;
+    password: string;
+}

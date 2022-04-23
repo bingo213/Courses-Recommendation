@@ -4,6 +4,8 @@ import { COLORS } from '../colors';
 import { Eye, HiddenEye } from '../Icons';
 
 export interface InputProps {
+  name: string;
+  errorMessage?: string;
   variant?: 'box' | 'line';
   placeholder?: string;
   required?: boolean;
@@ -11,55 +13,74 @@ export interface InputProps {
   note?: string;
   type: 'text' | 'number' | 'password';
   value?: string | number;
-  onChange?: (value?: string | number) => void;
   style?: CSSProperties;
 }
 
-export const Input: React.FC<InputProps> = ({
-  variant = 'line',
-  required,
-  placeholder,
-  label,
-  note,
-  type,
-  value,
-  onChange,
-  ...rest
-}: InputProps) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const showPasswordIcon = useRef(type === 'password');
-  return (
-    <Wrapper {...rest}>
-      {label && (
-        <Label>
-          {label}
-          {required && (
-            <span style={{ color: '#B50606', marginLeft: '3px' }}>*</span>
+export const Input: React.FC<InputProps> = React.forwardRef<
+  HTMLInputElement,
+  InputProps
+>(
+  (
+    {
+      name,
+      errorMessage,
+      variant = 'line',
+      required,
+      placeholder,
+      label,
+      note,
+      type,
+      value,
+      ...rest
+    }: InputProps,
+    ref
+  ) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const showPasswordIcon = useRef(type === 'password');
+    return (
+      <Wrapper {...rest}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+          }}
+        >
+          {label && (
+            <Label>
+              {label}
+              {required && (
+                <span style={{ color: '#B50606', marginLeft: '3px' }}>*</span>
+              )}
+            </Label>
           )}
-        </Label>
-      )}
-      <InputWrapper>
-        <StyledInput
-          type={showPasswordIcon && showPassword ? 'text' : type}
-          value={value}
-          onChange={e => onChange && onChange(e.target.value)}
-          variant={variant}
-          placeholder={placeholder}
-        />
-        {showPasswordIcon.current && (
-          <Icon onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ? (
-              <HiddenEye width={18} fill={COLORS.placeholder} />
-            ) : (
-              <Eye width={18} fill={COLORS.placeholder} />
-            )}
-          </Icon>
-        )}
-      </InputWrapper>
-      {note && <Note>{note}</Note>}
-    </Wrapper>
-  );
-};
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        </div>
+        <InputWrapper>
+          <StyledInput
+            name={name}
+            type={showPasswordIcon && showPassword ? 'text' : type}
+            value={value}
+            variant={variant}
+            placeholder={placeholder}
+            ref={ref}
+            errorMessage={errorMessage}
+          />
+          {showPasswordIcon.current && (
+            <Icon onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? (
+                <HiddenEye width={18} fill={COLORS.placeholder} />
+              ) : (
+                <Eye width={18} fill={COLORS.placeholder} />
+              )}
+            </Icon>
+          )}
+        </InputWrapper>
+        {note && <Note>{note}</Note>}
+      </Wrapper>
+    );
+  }
+);
 
 const Wrapper = styled.div``;
 
@@ -82,8 +103,11 @@ const Label = styled.div`
   color: ${COLORS.textPrimary};
 `;
 
-const StyledInput = styled.input<{ variant: 'line' | 'box' }>(
-  ({ variant }) => `
+const StyledInput = styled.input<{
+  variant: 'line' | 'box';
+  errorMessage?: string;
+}>(
+  ({ variant, errorMessage }) => `
   outline: none;
   border: none;
   width: 100%;
@@ -96,15 +120,27 @@ const StyledInput = styled.input<{ variant: 'line' | 'box' }>(
     border: 1px solid ${COLORS.line100};
     border-radius: 4px;
     padding: 6px 8px;
-    &:focus {
+    ${
+      errorMessage
+        ? `border: 1px solid ${COLORS.error}`
+        : `&:focus {
       border: 1px solid ${COLORS.primary500};
+    }`
     }
   `
-      : `border-bottom: 1px solid ${COLORS.line200};
+      : `border-bottom: 1px solid ${
+          errorMessage ? COLORS.error : COLORS.line200
+        };
          padding: 6px 0;`
   }
 `
 );
+
+const ErrorMessage = styled.div`
+  color: ${COLORS.error};
+  font-size: 11px;
+  margin-bottom: 4px;
+`;
 
 const Note = styled.div`
   font-size: 10px;

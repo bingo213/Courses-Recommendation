@@ -1,5 +1,4 @@
 {
-  "test": "thử nghiệm",
   "CourseRecommend": "Gợi ý môn học",
   "Logout": "Đăng xuất",
   "CoursesRecommend": "Gợi ý môn học",
@@ -16,6 +15,8 @@
   "Predict": "Dự đoán",
   "GradeAverage": "Điểm trung bình",
   "GradeDistribution": "Phân bố điểm",
+  "Username": "Tên người dùng",
+  "Password": "Mật khẩu",
   "FullName": "Họ và tên",
   "PersonalInfomation": "Thông tin cá nhân",
   "ChangePassword": "Thay đổi mật khẩu",
@@ -106,5 +107,7 @@
   "MacroEconomics1": "Kinh tế vĩ mô 1",
   "AuditingPrinciples": "Nguyên lý kế toán",
   "BranchRelationsAndResourceAdministration": "Quan hệ ngành và quản trị nguồn nhân lực",
-  "GraduationThesis": "Khóa luận tốt nghiệp"
+  "GraduationThesis": "Khóa luận tốt nghiệp",
+  "ThisIsRequiredField": "Đây là trường bắt buộc",
+  "MaxLengthIs{{max}}": "Độ dài tối đa là {{max}}"
 }

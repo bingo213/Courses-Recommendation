@@ -16,11 +16,11 @@ export const Account: React.FC<{}> = () => {
       <Part>
         <Title>{t('PersonalInfomation')}</Title>
         <Form className="form-left">
-          <StyledInput label={t('FullName')} type="text" variant="box" />
-          <StyledInput label={t('Class')} type="text" variant="box" />
-          <StyledInput label={t('SchoolYear')} type="text" variant="box" />
-          <StyledInput label={t('PhoneNumber')} type="text" variant="box" />
-          <StyledInput label={t('PrivateEmail')} type="text" variant="box" />
+          <StyledInput label={t('FullName')} type="text" variant="box" name='fullName' />
+          <StyledInput label={t('Class')} type="text" variant="box" name='class' />
+          <StyledInput label={t('SchoolYear')} type="text" variant="box" name='schoolYear' />
+          <StyledInput label={t('PhoneNumber')} type="text" variant="box" name='phoneNumber' />
+          <StyledInput label={t('PrivateEmail')} type="text" variant="box" name='privateEmail' />
           <div style={{ padding: '12px 0 32px 0' }}>
             <Button block type="submit">
               {t('SaveInfo')}
@@ -32,11 +32,13 @@ export const Account: React.FC<{}> = () => {
         <Title>{t('ChangePassword')}</Title>
         <Form className="form-right">
           <StyledInput
+          name='password'
             label={t('EnterNewPassword')}
             type="password"
             variant="box"
           />
           <StyledInput
+          name='rePassword'
             label={t('Re-enterPassword')}
             type="password"
             variant="box"

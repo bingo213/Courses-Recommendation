@@ -16,7 +16,6 @@ export interface TableProps {
 }
 
 export const Table: React.FC<TableProps> = ({ columns, data }: TableProps) => {
-  const rand256 = () => Math.floor(Math.random() * 256) + 1;
   return (
     <TableWrapper>
       <TableRow className="table-head">

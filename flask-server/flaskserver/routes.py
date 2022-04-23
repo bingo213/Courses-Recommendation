@@ -9,15 +9,14 @@ def login():
     password = request.json.get("password", None)
 
     user = Account.query.filter_by(username=username).first()
-    print(user)
 
     if user and bcrypt.check_password_hash(user.password, password):
         response = jsonify({"msg": "login successful"})
         access_token = create_access_token(identity=username)
         set_access_cookies(response, access_token)
-        return {"msg": "login successful", "token": access_token}
+        return {"msg": "login successful", "token": access_token}, 200
 
-    return {"msg": "username or password is wrong"}
+    return {"msg": "username or password is wrong"}, 400
 
 
 @app.route("/logout", methods=['POST'])
