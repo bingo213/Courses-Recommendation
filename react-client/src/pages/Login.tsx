@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import statisticIllutration from '../assets/statistic_illutration.png';
@@ -6,8 +6,8 @@ import { Button, COLORS, Input, Notification } from '../atoms';
 import { LOGO } from '../constants';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { userApi } from '../apis';
-import { useToken } from '../hooks';
 import { useLocation, useNavigate } from 'react-router';
+import { useAuth } from '../contexts';
 
 type FormValues = {
   username: string;
@@ -17,9 +17,13 @@ type FormValues = {
 export const Login: React.FC = () => {
   const { t } = useTranslation();
   const [showNoti, setShowNoti] = useState(false);
-  const { setToken } = useToken();
   const navigate = useNavigate();
   const location = useLocation() as any;
+  const { setUsername, setToken, setAvatar, removeUserInfo } = useAuth();
+
+  useEffect(() => {
+    removeUserInfo && removeUserInfo();
+  }, []);
 
   const {
     register,
@@ -30,7 +34,10 @@ export const Login: React.FC = () => {
     userApi
       .login(data)
       .then(userInfo => {
-        setToken(userInfo.token);
+        setToken && setToken(userInfo.token);
+        setUsername && setUsername(data.username);
+        setAvatar && setAvatar(userInfo.avatar);
+
         if (location?.state?.from) navigate(location.state.from);
         else navigate('/user/recommend');
       })

@@ -8,11 +8,6 @@ import { Account, COLORS, GrowthGraph, House, Clipboard } from './atoms';
 export const APP_NAME = 'ScoreU';
 export const LOGO = logo;
 
-export const LOCAL_STORAGE = {
-  LOCALIZATION: 'localization',
-  TOKEN: 'token'
-};
-
 export const REGIONS: IRegion = {
   vi: {
     key: 'vi',
@@ -25,6 +20,8 @@ export const REGIONS: IRegion = {
     flag: <img src={englandFlag} alt="England Flag" width={36} />,
   },
 };
+
+export const DEFAULT_LANGUAGE = REGIONS.vi.key;
 
 export const SIDE_BAR: NavElement[] = [
   { icon: <House width={26} fill={COLORS.textSecondary} />, title: 'CoursesRecommend', link: "recommend" },

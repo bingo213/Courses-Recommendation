@@ -2,10 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { AngleDown, Avatar, COLORS, Logout } from '../../atoms';
 import { REGIONS } from '../../constants';
-import { useLanguage } from '../../hooks';
 import { Dropdown, DropdownItem } from '../Dropdown';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { userApi } from '../../apis';
+import { useNavigate } from 'react-router';
+import { useAuth, useLanguage } from '../../contexts';
 
 export interface PageHeaderProps {
   title: string;
@@ -20,9 +21,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   username,
   avatar,
 }: PageHeaderProps) => {
+  const navigate = useNavigate();
+  const { removeUserInfo } = useAuth();
   const { t } = useTranslation();
   const { currentLanguage, changeLanguage } = useLanguage();
   const currentRegion = REGIONS[currentLanguage];
+  console.log(currentLanguage)
   const localizationMenu = (
     <>
       {Object.values(REGIONS).map(
@@ -32,7 +36,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               key={el.key}
               label={el.name}
               prefixIcon={el.flag}
-              onClick={() => changeLanguage(el.key)}
+              onClick={() => changeLanguage && changeLanguage(el.key)}
               style={{ width: 170 }}
             />
           )
@@ -41,13 +45,17 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   );
   const userMenu = (
     <>
-      <Link to="/login">
-        <DropdownItem
-          label={t('Logout')}
-          prefixIcon={<Logout width={24} fill={COLORS.textSecondary} />}
-          style={{ width: 150 }}
-        />
-      </Link>
+      <DropdownItem
+        label={t('Logout')}
+        prefixIcon={<Logout width={24} fill={COLORS.textSecondary} />}
+        style={{ width: 150 }}
+        onClick={() => {
+          userApi.logout().then(() => {
+            removeUserInfo && removeUserInfo()
+            navigate('/login');
+          });
+        }}
+      />
     </>
   );
   return (

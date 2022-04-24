@@ -13,12 +13,14 @@ import { SideBar } from './components';
 import { PageHeader } from './components/PageHeader';
 import { routes } from './config';
 import { SIDE_BAR } from './constants';
+import { useAuth } from './contexts';
 import { Login, NotFound } from './pages';
 
 const AppMainLayout: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
   const { t } = useTranslation();
+  const { username } = useAuth();
   return (
     <>
       <StyledSideBar
@@ -32,7 +34,7 @@ const AppMainLayout: React.FC = () => {
           title={t(
             SIDE_BAR.find(e => e?.link && path.includes(e.link))?.title || ''
           )}
-          username="Bingo"
+          username={username || 'user'}
           subTitle={t('LearnMoreEffectively')}
         />
         <Outlet />

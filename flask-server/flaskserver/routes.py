@@ -14,7 +14,7 @@ def login():
         response = jsonify({"msg": "login successful"})
         access_token = create_access_token(identity=username)
         set_access_cookies(response, access_token)
-        return {"msg": "login successful", "token": access_token}, 200
+        return {"msg": "login successful", "token": access_token, "avatar": user.avatar}, 200
 
     return {"msg": "username or password is wrong"}, 400
 
