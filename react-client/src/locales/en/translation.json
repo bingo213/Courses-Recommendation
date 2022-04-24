@@ -109,5 +109,7 @@
   "BranchRelationsAndResourceAdministration": "Branch Relations and Resource Administration",
   "GraduationThesis": "Graduation Thesis",
   "ThisIsRequiredField": "This is required field",
-  "MaxLengthIs{{max}}": "Max length is {{max}}"
+  "MaxLengthIs{{max}}": "Max length is {{max}}",
+  "Error": "Error",
+  "IncorrectUsernameOrPassword": "Incorrect username or password"
 }

@@ -109,5 +109,7 @@
   "BranchRelationsAndResourceAdministration": "Quan hệ ngành và quản trị nguồn nhân lực",
   "GraduationThesis": "Khóa luận tốt nghiệp",
   "ThisIsRequiredField": "Đây là trường bắt buộc",
-  "MaxLengthIs{{max}}": "Độ dài tối đa là {{max}}"
+  "MaxLengthIs{{max}}": "Độ dài tối đa là {{max}}",
+  "Error": "Lỗi",
+  "IncorrectUsernameOrPassword": "Tên đăng nhập hoặc mật khẩu không đúng"
 }

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import statisticIllutration from '../assets/statistic_illutration.png';
-import { Button, COLORS, Input } from '../atoms';
+import { Button, COLORS, Input, Notification } from '../atoms';
 import { LOGO } from '../constants';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { userApi } from '../apis';
@@ -16,6 +16,7 @@ type FormValues = {
 
 export const Login: React.FC = () => {
   const { t } = useTranslation();
+  const [showNoti, setShowNoti] = useState(false);
   const { setToken } = useToken();
   const navigate = useNavigate();
   const location = useLocation() as any;
@@ -31,9 +32,12 @@ export const Login: React.FC = () => {
       .then(userInfo => {
         setToken(userInfo.token);
         if (location?.state?.from) navigate(location.state.from);
-        else navigate('/user/predict');
+        else navigate('/user/recommend');
       })
-      .catch(error => console.log(error.response.data));
+      .catch(error => {
+        console.log(error);
+        setShowNoti(true);
+      });
   };
 
   return (
@@ -81,6 +85,13 @@ export const Login: React.FC = () => {
           </Form>
         </Right>
       </Main>
+      <Notification
+        type="error"
+        show={showNoti}
+        onClose={() => setShowNoti(false)}
+        title={t('Error')}
+        message={t('IncorrectUsernameOrPassword')}
+      />
     </Wrapper>
   );
 };

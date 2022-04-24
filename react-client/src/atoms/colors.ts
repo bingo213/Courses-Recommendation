@@ -9,6 +9,9 @@ export const COLORS = {
   textSecondary: '#727272',
   placeholder: '#BCBEBF',
   error: '#E74C3C',
+  info: '#2E86C1',
+  warning: '#E67E22',
+  success: '#28B463',
 };
 
 export const TAG_COLOR = [
