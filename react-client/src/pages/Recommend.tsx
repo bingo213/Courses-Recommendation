@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Button, Input, TAG_COLOR } from '../atoms';
-import { Select, Table } from '../components';
+import { OptionProps, Select, Table } from '../components';
 import { tableData1 } from '../components/Table/__mocks__';
 
 const mockOptions = [
@@ -21,14 +22,50 @@ const mockOptions = [
   { text: 'Phát triển hệ thống', value: 'PTHT', color: TAG_COLOR[4] },
 ];
 
+type FormValues = {
+  numberOfCourses: number;
+  orientations: string[];
+};
+
 export const Recommend: React.FC = () => {
   const { t } = useTranslation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<FormValues>();
+
+  const onSubmit: SubmitHandler<FormValues> = data => {
+    console.log(data);
+  };
+
+  const orient = useRef<string[]>([]);
+
+  const handleSelectOption = (opt: OptionProps) => {
+    orient.current.push(opt.value);
+    setValue('orientations', orient.current);
+  };
+
+  const handleRemoveOption = (opt: OptionProps) => {
+    orient.current = orient.current.filter(e => e !== opt.value);
+    setValue('orientations', orient.current);
+  };
+
+  const validateNumberOfCourses = () => {
+    if (errors?.numberOfCourses?.type === 'required')
+      return t('ThisIsRequiredField');
+    if (
+      errors?.numberOfCourses?.type === 'max' ||
+      errors?.numberOfCourses?.type === 'min'
+    )
+      return t('InputNumberInRange{{min}}-{{max}}', { min: 1, max: 20 });
+  };
   return (
     <>
-      <StyledForm>
+      <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <Field>
           <Input
-            name="numberOfCourses"
             type="number"
             label={t('NumberOfCourses')}
             note={t('InputNumberYouWantToSuggest{{min}}-{{max}}', {
@@ -36,13 +73,22 @@ export const Recommend: React.FC = () => {
               max: 20,
             })}
             required
-            style={{ flex: 1, marginRight: 48, whiteSpace: 'pre-wrap' }}
+            style={{ flex: 1, marginRight: 48 }}
+            {...register('numberOfCourses', {
+              required: true,
+              min: 1,
+              max: 20,
+            })}
+            errorMessage={validateNumberOfCourses()}
           />
           <Select
             label={t('SelectOrientations')}
             options={mockOptions}
             note={t('CanSelectMoreThanOne')}
-            style={{ flex: 4 }}
+            style={{ flex: 3 }}
+            {...register('orientations')}
+            onSelect={handleSelectOption}
+            onRemoveOption={handleRemoveOption}
           />
         </Field>
         <Button type="submit" style={{ margin: 'auto' }}>

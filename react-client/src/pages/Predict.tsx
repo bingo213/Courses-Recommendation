@@ -26,7 +26,7 @@ export const Predict: React.FC<{}> = () => {
   return (
     <>
       <form>
-        <Select options={mockOptions} label={t('SelectCourses')} required />
+        <Select options={mockOptions} label={t('SelectCourses')} required name="courses" />
         <StyledButton>{t('Predict')}</StyledButton>
       </form>
       <Table {...tableData2}/>

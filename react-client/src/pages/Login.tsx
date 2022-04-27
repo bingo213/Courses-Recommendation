@@ -7,7 +7,7 @@ import { LOGO } from '../constants';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { userApi } from '../apis';
 import { useLocation, useNavigate } from 'react-router';
-import { useAuth } from '../contexts';
+import { useCurrentUser, useToken } from '../hooks';
 
 type FormValues = {
   username: string;
@@ -19,10 +19,12 @@ export const Login: React.FC = () => {
   const [showNoti, setShowNoti] = useState(false);
   const navigate = useNavigate();
   const location = useLocation() as any;
-  const { setUsername, setToken, setAvatar, removeUserInfo } = useAuth();
+  const { setToken, removeToken } = useToken();
+  const { setUser, removeUser } = useCurrentUser();
 
   useEffect(() => {
-    removeUserInfo && removeUserInfo();
+    removeToken();
+    removeUser();
   }, []);
 
   const {
@@ -35,8 +37,7 @@ export const Login: React.FC = () => {
       .login(data)
       .then(userInfo => {
         setToken && setToken(userInfo.token);
-        setUsername && setUsername(data.username);
-        setAvatar && setAvatar(userInfo.avatar);
+        setUser({ username: data.username, avatar: userInfo.avatar });
 
         if (location?.state?.from) navigate(location.state.from);
         else navigate('/user/recommend');
@@ -65,7 +66,6 @@ export const Login: React.FC = () => {
               type="text"
               variant="box"
               {...register('username', { required: true })}
-              name="username"
               errorMessage={
                 errors?.username?.type === 'required'
                   ? t('ThisIsRequiredField')
@@ -77,7 +77,6 @@ export const Login: React.FC = () => {
               type="password"
               variant="box"
               {...register('password', { required: true })}
-              name="password"
               errorMessage={
                 errors?.password?.type === 'required'
                   ? t('ThisIsRequiredField')

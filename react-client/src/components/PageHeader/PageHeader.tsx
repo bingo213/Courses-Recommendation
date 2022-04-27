@@ -6,7 +6,7 @@ import { Dropdown, DropdownItem } from '../Dropdown';
 import { useTranslation } from 'react-i18next';
 import { userApi } from '../../apis';
 import { useNavigate } from 'react-router';
-import { useAuth, useLanguage } from '../../contexts';
+import { useLanguage } from '../../hooks';
 
 export interface PageHeaderProps {
   title: string;
@@ -22,7 +22,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   avatar,
 }: PageHeaderProps) => {
   const navigate = useNavigate();
-  const { removeUserInfo } = useAuth();
   const { t } = useTranslation();
   const { currentLanguage, changeLanguage } = useLanguage();
   const currentRegion = REGIONS[currentLanguage];
@@ -51,7 +50,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         style={{ width: 150 }}
         onClick={() => {
           userApi.logout().then(() => {
-            removeUserInfo && removeUserInfo()
+            // removeUserInfo && removeUserInfo()
             navigate('/login');
           });
         }}

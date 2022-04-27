@@ -22,7 +22,7 @@ export const Tag: React.FC<TagProps> = ({
       }}
     >
       <Title>{title}</Title>
-      <Multiply width={12} fill={color} />
+      {onClose && <Multiply width={12} fill={color} />}
     </TagWrapper>
   );
 };

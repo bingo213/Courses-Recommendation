@@ -1,5 +1,5 @@
 import { ILogin } from "../interfaces";
-import { axiosClient } from "./axiosClient";
+import { authClient, axiosClient } from "./axiosClient";
 
 export const userApi = {
     login: async (data: ILogin) => {
@@ -8,5 +8,9 @@ export const userApi = {
 
     logout: async () => {
         return axiosClient.post('/logout').then(res => res.data)
+    },
+
+    getStudent: async() => {
+        return authClient.get('/student').then(res => res.data)
     }
 }

@@ -5,17 +5,11 @@ import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
-import { AuthProvider, LanguageProvider } from './contexts';
-import { DEFAULT_LANGUAGE } from './constants';
 
 ReactDOM.render(
   <React.StrictMode>
     <I18nextProvider i18n={i18n}>
-      <AuthProvider>
-        <LanguageProvider currentLanguage={DEFAULT_LANGUAGE}>
-          <App />
-        </LanguageProvider>
-      </AuthProvider>
+      <App />
     </I18nextProvider>
   </React.StrictMode>,
   document.getElementById('root')

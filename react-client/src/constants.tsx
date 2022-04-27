@@ -8,6 +8,12 @@ import { Account, COLORS, GrowthGraph, House, Clipboard } from './atoms';
 export const APP_NAME = 'ScoreU';
 export const LOGO = logo;
 
+export const LOCAL_STORAGE = {
+  LOCALIZATION: 'localization',
+  TOKEN: 'token',
+  USER: 'user',
+};
+
 export const REGIONS: IRegion = {
   vi: {
     key: 'vi',
@@ -24,8 +30,24 @@ export const REGIONS: IRegion = {
 export const DEFAULT_LANGUAGE = REGIONS.vi.key;
 
 export const SIDE_BAR: NavElement[] = [
-  { icon: <House width={26} fill={COLORS.textSecondary} />, title: 'CoursesRecommend', link: "recommend" },
-  { icon: <GrowthGraph width={26} fill={COLORS.textSecondary} />, title: 'PredictGrade', link: "predict" },
-  { icon: <Clipboard width={26} fill={COLORS.textSecondary} />, title: 'MyGrade', link: "my_grade" },
-  { icon: <Account width={26} fill={COLORS.textSecondary} />, title: 'AccountSetting', link: "account" },
-]
+  {
+    icon: <House width={26} fill={COLORS.textSecondary} />,
+    title: 'CoursesRecommend',
+    link: 'recommend',
+  },
+  {
+    icon: <GrowthGraph width={26} fill={COLORS.textSecondary} />,
+    title: 'PredictGrade',
+    link: 'predict',
+  },
+  {
+    icon: <Clipboard width={26} fill={COLORS.textSecondary} />,
+    title: 'MyGrade',
+    link: 'my_grade',
+  },
+  {
+    icon: <Account width={26} fill={COLORS.textSecondary} />,
+    title: 'AccountSetting',
+    link: 'account',
+  },
+];

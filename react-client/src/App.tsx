@@ -6,6 +6,7 @@ import {
   Route,
   Outlet,
   useLocation,
+  Navigate,
 } from 'react-router-dom';
 import styled from 'styled-components';
 import { COLORS } from './atoms';
@@ -13,14 +14,13 @@ import { SideBar } from './components';
 import { PageHeader } from './components/PageHeader';
 import { routes } from './config';
 import { SIDE_BAR } from './constants';
-import { useAuth } from './contexts';
+import { useCurrentUser } from './hooks';
 import { Login, NotFound } from './pages';
 
-const AppMainLayout: React.FC = () => {
+const AppMainLayout: React.FC<{ username: string }> = ({ username }) => {
   const location = useLocation();
   const path = location.pathname;
   const { t } = useTranslation();
-  const { username } = useAuth();
   return (
     <>
       <StyledSideBar
@@ -43,6 +43,16 @@ const AppMainLayout: React.FC = () => {
   );
 };
 
+const ProtectedRoute = () => {
+  const { user } = useCurrentUser();
+  const location = useLocation();
+  return user.username ? (
+    <AppMainLayout username={user.username} />
+  ) : (
+    <Navigate to="/" state={{ from: location }} />
+  );
+};
+
 export const App: React.FC<{}> = () => {
   const accountRoutes = routes.filter(
     route => route.path === 'sign_up' || route.path === 'login'
@@ -58,7 +68,7 @@ export const App: React.FC<{}> = () => {
             <Route key={index} path={route.path} element={route.component} />
           ))}
         </Route>
-        <Route path="user" element={<AppMainLayout />}>
+        <Route path="user" element={<ProtectedRoute />}>
           {mainRoutes.map((route, index) => (
             <Route key={index} path={route.path} element={route.component} />
           ))}
