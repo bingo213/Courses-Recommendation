@@ -1,7 +1,8 @@
-from flaskserver import db, bcrypt, app, Account
+from flaskserver import db, bcrypt, app, Account, Orientation, OrientationSchema
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, get_jwt_identity, get_jwt, jwt_required
 from datetime import datetime, timedelta, timezone
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -23,7 +24,7 @@ def login():
 def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
-    return response
+    return response, 200
 
 @app.after_request
 def refresh_expiring_jwts(response):
@@ -38,10 +39,16 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         return response
 
+@app.route('/orientations', methods=["GET"])
+def get_orientations():
+    orientations = Orientation.query.all()
+    orientations_schema = OrientationSchema(many=True)
+    output = orientations_schema.dump(orientations)
+    return {"msg": "Get all orientations successful", "orientations": output}, 200
 
-@app.route("/protected", methods=["GET"])
+@app.route("/recommend", methods=["POST"])
 @jwt_required()
-def protected():
+def recommend_courses():
     # Access the identity of the current user with get_jwt_identity
     current_user_id = get_jwt_identity()
     user = User.query.get(current_user_id)

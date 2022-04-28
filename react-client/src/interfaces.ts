@@ -12,3 +12,18 @@ export interface IRegionItem {
     username: string;
     password: string;
 }
+
+export interface IOrientation {
+  id: string;
+  orientationName: string;
+}
+
+export interface IOrientationResponse {
+  msg: string;
+  orientations: IOrientation[];
+}
+
+export interface IRecommendRequest {
+  numberOfCourses: number;
+  orientations?: string[];
+}

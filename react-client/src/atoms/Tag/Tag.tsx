@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Multiply } from '../Icons';
 
@@ -13,6 +14,7 @@ export const Tag: React.FC<TagProps> = ({
   color,
   onClose,
 }: TagProps) => {
+  const {t} = useTranslation();
   return (
     <TagWrapper
       color={color}
@@ -21,7 +23,7 @@ export const Tag: React.FC<TagProps> = ({
         onClose && onClose();
       }}
     >
-      <Title>{title}</Title>
+      <Title>{t(title)}</Title>
       {onClose && <Multiply width={12} fill={color} />}
     </TagWrapper>
   );

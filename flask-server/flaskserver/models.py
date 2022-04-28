@@ -1,4 +1,5 @@
-from flaskserver import db
+from flaskserver import db, ma
+from flask_marshmallow import fields
 
 class Student(db.Model):
     __tablename__ = 'student'
@@ -32,3 +33,8 @@ class Grade(db.Model):
     studentId = db.Column(db.String(8), db.ForeignKey('student.id'), nullable=False, primary_key=True)
     courseId = db.Column(db.String(10), db.ForeignKey('course.id'), nullable=False, primary_key=True)
     grade = db.Column(db.Float)
+
+
+class OrientationSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'orientationName')

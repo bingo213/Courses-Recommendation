@@ -1,26 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { orientationApi } from '../apis';
 import { Button, Input, TAG_COLOR } from '../atoms';
 import { OptionProps, Select, Table } from '../components';
 import { tableData1 } from '../components/Table/__mocks__';
-
-const mockOptions = [
-  { text: 'Mạng máy tính', value: 'MMT', color: TAG_COLOR[0] },
-  {
-    text: 'Tương tác người - máy',
-    value: 'TTNM',
-    color: TAG_COLOR[1],
-  },
-  { text: 'Thương mại điện tử', value: 'TMĐT', color: TAG_COLOR[2] },
-  {
-    text: 'Các hệ thống thông minh',
-    value: 'CHTTM',
-    color: TAG_COLOR[3],
-  },
-  { text: 'Phát triển hệ thống', value: 'PTHT', color: TAG_COLOR[4] },
-];
+import { IOrientationResponse } from '../interfaces';
 
 type FormValues = {
   numberOfCourses: number;
@@ -41,6 +27,16 @@ export const Recommend: React.FC = () => {
   };
 
   const orient = useRef<string[]>([]);
+
+  const [orientations, setOrientations] =
+    useState<IOrientationResponse['orientations']>();
+
+  useEffect(() => {
+    orientationApi.getAll().then(data => {
+      let elements = data.orientations.filter(e => e.id !== 'NONE');
+      setOrientations(elements);
+    });
+  }, []);
 
   const handleSelectOption = (opt: OptionProps) => {
     orient.current.push(opt.value);
@@ -83,7 +79,13 @@ export const Recommend: React.FC = () => {
           />
           <Select
             label={t('SelectOrientations')}
-            options={mockOptions}
+            options={orientations?.map((o, index) => {
+              return {
+                text: o.orientationName,
+                value: o.id,
+                color: TAG_COLOR[index],
+              };
+            }) || []}
             note={t('CanSelectMoreThanOne')}
             style={{ flex: 3 }}
             {...register('orientations')}

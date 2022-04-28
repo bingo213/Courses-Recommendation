@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled, { CSSProperties } from 'styled-components';
 import { COLORS, Tag } from '../../atoms';
 import { AngleDown, Tick } from '../../atoms/Icons';
@@ -41,6 +42,7 @@ export const Select: React.FC<SelectProps> = React.forwardRef<
     }: SelectProps,
     ref
   ) => {
+    const {t} = useTranslation()
     const [activeOptions, setActiveOptions] = useState<OptionProps[]>([]);
     const [show, setShow] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -116,7 +118,7 @@ export const Select: React.FC<SelectProps> = React.forwardRef<
                   !activeOptions.includes(opt) && onSelectOption(opt)
                 }
               >
-                {opt.text}
+                {t(opt.text)}
                 {activeOptions.includes(opt) && (
                   <Tick width={24} fill={COLORS.primary500} />
                 )}
