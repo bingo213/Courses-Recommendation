@@ -1,9 +1,10 @@
-from flaskserver import db, bcrypt, app, Account, Orientation, OrientationSchema, Grade, Course
+from flaskserver import db, bcrypt, app, Account, Orientation, OrientationSchema, Grade, Course, StudentSchema, Student, GradeSchema
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, get_jwt_identity, get_jwt, jwt_required
 from datetime import datetime, timedelta, timezone
 import joblib
 from os.path import dirname, join, realpath
+from marshmallow import ValidationError
 
 with open(
     join(dirname(realpath(__file__)), "predict_model.pkl"), "rb"
@@ -136,3 +137,37 @@ def predict_courses():
     result = list(map(convert_prediction, predictions))
 
     return jsonify({"studentId": current_user_id, "predictions": result}), 200
+
+@app.route("/account", methods=["GET", "PATCH"])
+@jwt_required()
+def setting_account():
+    # Access the identity of the current user with get_jwt_identity
+    current_user_id = get_jwt_identity()
+
+    if request.method == "GET":
+        user = Student.query.filter_by(id=current_user_id).first()
+        student_schema = StudentSchema()
+        result = student_schema.dump(user)
+        return jsonify({"msg": "Get information of student successful", "student": result}), 200
+
+    data = request.json
+    studen_schema = StudentSchema()
+    try: 
+        student = Student(studen_schema.load(data))
+        db.session.query(Student).filter(Student.id==current_user_id).update(data)
+        db.session.commit() 
+        return jsonify(msg='Student updated successfully', user_id="student[id]"), 200   
+    except ValidationError as exception_message: 
+        return jsonify(error='{}'.format(exception_message)), 400
+
+@app.route("/grade", methods=["GET"])
+@jwt_required()
+def get_all_grades():
+    # Access the identity of the current user with get_jwt_identity
+    current_user_id = get_jwt_identity()
+
+    grade = db.session.query(Grade.grade, Grade.courseId, Course.courseName).join(Course).filter(Grade.studentId == current_user_id).all()
+    grade_schema = GradeSchema(many=True)
+    re = grade_schema.dump(grade)
+
+    return jsonify({"msg": re}), 200

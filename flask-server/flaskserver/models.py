@@ -1,5 +1,5 @@
 from flaskserver import db, ma
-from flask_marshmallow import fields
+from marshmallow import post_load, fields
 
 class Student(db.Model):
     __tablename__ = 'student'
@@ -9,6 +9,18 @@ class Student(db.Model):
     email = db.Column(db.String(50))
     phoneNumber = db.Column(db.String(10))
     className = db.Column(db.String(10))
+
+    def __init__(self, fullName=None, dateOfBirth=None, email=None, phoneNumber=None, className=None):
+        if fullName is not None:
+            self.fullName = fullName
+        if dateOfBirth is not None:
+            self.dateOfBirth = dateOfBirth
+        if email is not None:
+            self.email = email
+        if phoneNumber is not None:
+            self.phoneNumber = phoneNumber
+        if className is not None:
+            self.className = className
 
 class Account(db.Model):
     __tablename__ = 'account'
@@ -38,3 +50,20 @@ class Grade(db.Model):
 class OrientationSchema(ma.Schema):
     class Meta:
         fields = ('id', 'orientationName')
+
+class StudentSchema(ma.Schema):
+    fullName = ma.String(validate=lambda x: 8 < len(x) < 100)
+    email = ma.Email()
+    phoneNumber = ma.String()
+    dateOfBirth = ma.DateTime()
+
+    class Meta:
+        fields = ('id', 'fullName', 'dateOfBirth', 'email', 'phoneNumber', 'className')
+
+    @post_load
+    def make_student(self, data, **kwargs):
+        return Student(**data)
+
+class GradeSchema(ma.Schema):
+    class Meta:
+        fields = ("courseId", "courseName", "grade")

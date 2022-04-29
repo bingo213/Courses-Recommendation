@@ -21,7 +21,7 @@ jwt = JWTManager(app)
 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
-from flaskserver.models import Account, Course, Student, Grade, Orientation, OrientationSchema
+from flaskserver.models import Account, Course, Student, Grade, Orientation, OrientationSchema, StudentSchema, GradeSchema
 
 db.create_all()
 db.session.commit()
