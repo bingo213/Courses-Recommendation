@@ -21,7 +21,7 @@ class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.String(10), primary_key=True)
     courseName = db.Column(db.String(100), nullable=False)
-    orientation = db.Column(db.String(100), db.ForeignKey('orientation.id')) 
+    orientation = db.Column(db.String(100), db.ForeignKey('orientation.id'))
 
 class Orientation(db.Model):
     __tablename__ = 'orientation'

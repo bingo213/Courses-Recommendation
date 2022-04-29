@@ -1,4 +1,4 @@
-from flaskserver import db, bcrypt, app, Account, Orientation, OrientationSchema, Grade
+from flaskserver import db, bcrypt, app, Account, Orientation, OrientationSchema, Grade, Course
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, get_jwt_identity, get_jwt, jwt_required
 from datetime import datetime, timedelta, timezone
@@ -23,6 +23,40 @@ selective_courses = ['INT3105', 'INT3110', 'INT3117', 'INT3133', 'INT3217',
 
 courses_without_data = ['INT3108', 'INT3135', 'INT3136', 'INT3123', 'INT3138', 'INT2041', 'INT3137', 'BSA2001', 'BSA2006', 'ELT2031']
 
+def get_orientation_by_course_id(courseId):
+    orientationId = Course.query.filter_by(id=courseId).first().orientation
+    orientation = Orientation.query.filter_by(id=orientationId).first()
+    orientation_schema = OrientationSchema()
+    result = orientation_schema.dump(orientation)
+    return result
+
+def convert_prediction(prediction):
+    orientation = get_orientation_by_course_id(prediction.iid)
+    return {"course": prediction.iid, "grade": prediction.est, "orientationId": orientation["id"], "orientationName": orientation["orientationName"]}
+
+def calculate_student_average(studentId):
+    studentGrade = [student.grade for student in Grade.query.filter_by(studentId=studentId).all()]
+    return sum(studentGrade)/len(studentGrade)
+
+def predict_course_having_no_data(studentId):
+    averageGrade = calculate_student_average(studentId)
+    
+    def convert(courseId):
+        orientation = get_orientation_by_course_id(courseId)
+        return {"course": courseId, "grade": averageGrade,  "orientationId": orientation["id"], "orientationName": orientation["orientationName"]}
+    
+    return list(map(convert, courses_without_data))
+
+def get_top_n_predictions(predictions, n, orientationIdList):
+    if len(orientationIdList) > 0:
+        filterd_courses = [x for x in predictions if x["course"] in selective_courses and x["orientationId"] in orientationIdList]
+    else:
+        filterd_courses = [x for x in predictions if x["course"] in selective_courses]
+    
+    sorted_predictions = sorted([x for x in filterd_courses], key=lambda x: x["grade"], reverse=True)
+
+    return sorted_predictions[0:n]
+
 @app.route('/login', methods=['POST'])
 def login():
     username = request.json.get("username", None)
@@ -37,7 +71,6 @@ def login():
         return {"msg": "login successful", "token": access_token, "avatar": user.avatar}, 200
 
     return {"msg": "username or password is wrong"}, 400
-
 
 @app.route("/logout", methods=['POST'])
 def logout():
@@ -65,41 +98,34 @@ def get_orientations():
     output = orientations_schema.dump(orientations)
     return {"msg": "Get all orientations successful", "orientations": output}, 200
 
-def convert_prediction(prediction):
-    return {"course": prediction.iid, "grade": prediction.est}
-
-def calculate_student_average(studentId):
-    studentGrade = [student.grade for student in Grade.query.filter_by(studentId=studentId).all()]
-    return sum(studentGrade)/len(studentGrade)
-
-def predict_course_having_no_data(studentId):
-    averageGrade = calculate_student_average(studentId)
-    def convert(courseId):
-        return {"course": courseId, "grade": averageGrade}
-    
-    return list(map(convert, courses_without_data))
-
-def get_top_n_predictions(predictions, n):
-    sorted_predictions = sorted([x for x in predictions if x["course"] in selective_courses], key=lambda x: x["grade"], reverse=True)
-
-    return sorted_predictions[0:n]
-
 @app.route("/recommend", methods=["POST"])
 @jwt_required()
 def recommend_courses():
     # Access the identity of the current user with get_jwt_identity
     current_user_id = get_jwt_identity()
 
+    numberOfCourses = request.json.get("numberOfCourses", None)
+    orientations = request.json.get("orientations", [])
+
+    if numberOfCourses is None:
+        return {"msg": "Number of courses is required"}, 400
+    if numberOfCourses > 20:
+        return {"msg": "Number of courses is greater than the allowed number"}, 400
+    if numberOfCourses < 1:
+        return {"msg": "Number of courses is less than allowed number"}, 400
+
     grade_pred = [x for x in predictions if x.uid == current_user_id]
     result = list(map(convert_prediction, grade_pred)) + predict_course_having_no_data(current_user_id)
-    top_n = get_top_n_predictions(result, 5)
+    top_n = get_top_n_predictions(result, numberOfCourses, orientations)
 
-    return jsonify({"studentId": current_user_id, "recommendations": top_n}), 200
+    return {"studentId": current_user_id, "recommendations": top_n}, 200
 
 # @app.route("/predict", methods=["POST"])
 # @jwt_required()
 # def predict_courses():
 #     # Access the identity of the current user with get_jwt_identity
 #     current_user_id = get_jwt_identity()
+
+#     courses = request.json.get("courses", None)
 
 #     return jsonify({"studentId": current_user_id, "predictions": "top_n"}), 200
