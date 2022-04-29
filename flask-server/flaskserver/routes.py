@@ -120,12 +120,19 @@ def recommend_courses():
 
     return {"studentId": current_user_id, "recommendations": top_n}, 200
 
-# @app.route("/predict", methods=["POST"])
-# @jwt_required()
-# def predict_courses():
-#     # Access the identity of the current user with get_jwt_identity
-#     current_user_id = get_jwt_identity()
+@app.route("/predict", methods=["POST"])
+@jwt_required()
+def predict_courses():
+    # Access the identity of the current user with get_jwt_identity
+    current_user_id = get_jwt_identity()
 
-#     courses = request.json.get("courses", None)
+    courses = request.json.get("courses", [])
+    if len(courses) == 0:
+        return {"msg": "List of courses is required"}, 400
+    
+    predictions = []
+    for id in courses:
+        predictions.append(model.predict(current_user_id, id))
+    result = list(map(convert_prediction, predictions))
 
-#     return jsonify({"studentId": current_user_id, "predictions": "top_n"}), 200
+    return jsonify({"studentId": current_user_id, "predictions": result}), 200
