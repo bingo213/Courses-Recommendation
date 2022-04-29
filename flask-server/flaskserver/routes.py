@@ -1,6 +1,8 @@
-from flaskserver import db, bcrypt, app, Account, Orientation, OrientationSchema, Grade, Course, StudentSchema, Student, GradeSchema
+from flaskserver import db, app, bcrypt, Account, Orientation, OrientationSchema, Grade, Course,\
+                        StudentSchema, Student, GradeSchema, AccountSchema
 from flask import request, jsonify
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, get_jwt_identity, get_jwt, jwt_required
+from flask_jwt_extended import create_access_token, set_access_cookies,\
+                                unset_jwt_cookies, get_jwt_identity, get_jwt, jwt_required
 from datetime import datetime, timedelta, timezone
 import joblib
 from os.path import dirname, join, realpath
@@ -65,7 +67,7 @@ def login():
 
     user = Account.query.filter_by(username=username).first()
 
-    if user and bcrypt.check_password_hash(user.password, password):
+    if user and user.check_password(password):
         response = jsonify({"msg": "login successful"})
         access_token = create_access_token(identity=user.userId)
         set_access_cookies(response, access_token)
@@ -138,7 +140,7 @@ def predict_courses():
 
     return jsonify({"studentId": current_user_id, "predictions": result}), 200
 
-@app.route("/account", methods=["GET", "PATCH"])
+@app.route("/student", methods=["GET", "PATCH"])
 @jwt_required()
 def setting_account():
     # Access the identity of the current user with get_jwt_identity
@@ -151,12 +153,28 @@ def setting_account():
         return jsonify({"msg": "Get information of student successful", "student": result}), 200
 
     data = request.json
-    studen_schema = StudentSchema()
+    student_schema = StudentSchema()
     try: 
-        student = Student(studen_schema.load(data))
+        student = Student(student_schema.load(data))
         db.session.query(Student).filter(Student.id==current_user_id).update(data)
         db.session.commit() 
-        return jsonify(msg='Student updated successfully', user_id="student[id]"), 200   
+        return jsonify(msg="Student updated successfully", studentId=current_user_id), 200   
+    except ValidationError as exception_message: 
+        return jsonify(error='{}'.format(exception_message)), 400
+
+@app.route("/password", methods=["PATCH"])
+@jwt_required()
+def update_password():
+    # Access the identity of the current user with get_jwt_identity
+    current_user_id = get_jwt_identity()
+
+    password = request.json.get("password")
+    account_schema = AccountSchema()
+    try: 
+        account = Account(account_schema.load({"password": password}))
+        db.session.query(Account).filter(Account.username==current_user_id).update({"password": bcrypt.generate_password_hash(password).decode("utf8")})
+        db.session.commit() 
+        return jsonify(msg='Password updated successfully', studentId=current_user_id), 200   
     except ValidationError as exception_message: 
         return jsonify(error='{}'.format(exception_message)), 400
 
