@@ -13,7 +13,7 @@ import { COLORS } from './atoms';
 import { SideBar } from './components';
 import { PageHeader } from './components/PageHeader';
 import { routes } from './config';
-import { SIDE_BAR } from './constants';
+import { APP_NAME, SIDE_BAR } from './constants';
 import { useCurrentUser } from './hooks';
 import { Login, NotFound } from './pages';
 
@@ -35,7 +35,7 @@ const AppMainLayout: React.FC<{ username: string }> = ({ username }) => {
             SIDE_BAR.find(e => e?.link && path.includes(e.link))?.title || ''
           )}
           username={username || 'user'}
-          subTitle={t('LearnMoreEffectively')}
+          subTitle={t('With') + ' ' + APP_NAME + ' - ' + t('LearnMoreEffectively')}
         />
         <Outlet />
       </Main>
@@ -54,19 +54,13 @@ const ProtectedRoute = () => {
 };
 
 export const App: React.FC<{}> = () => {
-  const accountRoutes = routes.filter(
-    route => route.path === 'sign_up' || route.path === 'login'
-  );
-  const mainRoutes = routes.filter(
-    route => route.path !== 'sign_up' && route.path !== 'login'
-  );
+  const loginRoute = routes.find(route => route.path === 'login');
+  const mainRoutes = routes.filter(route => route.path !== 'login');
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />}>
-          {accountRoutes.map((route, index) => (
-            <Route key={index} path={route.path} element={route.component} />
-          ))}
+          <Route path={loginRoute?.path} element={loginRoute?.component} />
         </Route>
         <Route path="user" element={<ProtectedRoute />}>
           {mainRoutes.map((route, index) => (

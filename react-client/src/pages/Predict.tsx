@@ -1,38 +1,95 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { courseApi, serviceApi } from '../apis';
 import { Button, TAG_COLOR } from '../atoms';
-import { Select, Table } from '../components';
-import { tableData2 } from '../components/Table/__mocks__';
+import { OptionProps, Select, Table, TableProps } from '../components';
+import { cookPrediction } from '../helpers';
+import { ICourse, IPrediction } from '../interfaces';
 
-const mockOptions = [
-  { text: 'INT3111', value: 'MMT', color: TAG_COLOR[0] },
-  {
-    text: 'INT3135',
-    value: 'TTNM',
-    color: TAG_COLOR[1],
-  },
-  { text: 'INT3140', value: 'TMĐT', color: TAG_COLOR[2] },
-  {
-    text: 'INT3402',
-    value: 'CHTTM',
-    color: TAG_COLOR[3],
-  },
-  { text: 'INT3306', value: 'PTHT', color: TAG_COLOR[4] },
-];
+type FormValues = {
+  courses: string[];
+};
 
 export const Predict: React.FC<{}> = () => {
   const { t } = useTranslation();
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [courses, setCourses] = useState<ICourse[]>();
+  const [predictions, setPredictions] = useState<IPrediction[]>([]);
+  const courseRef = useRef<string[]>([]);
+  const { register, handleSubmit, setValue } = useForm<FormValues>();
+
+  useEffect(() => {
+    courseApi
+      .getAll()
+      .then(data => setCourses(data.courses))
+      .catch(error => console.log(error));
+  }, []);
+  console.log(courses);
+  const onSubmit: SubmitHandler<FormValues> = data => {
+    console.log(data);
+    if (!data.courses || data.courses.length === 0)
+      setErrorMessage('ThisIsRequiredField');
+    serviceApi
+      .predict(data)
+      .then(res => setPredictions(res.predictions))
+      .catch(error => console.log(error));
+  };
+
+  const handleSelectOption = (opt: OptionProps) => {
+    courseRef.current.push(opt.value);
+    setValue('courses', courseRef.current);
+  };
+
+  const predictionsTable: TableProps = {
+    columns: [t('Course'), t('PredictedGrade'), t('ConversionGrade')],
+    data: (predictions || []).map(p => cookPrediction(p, t)),
+  };
+
   return (
     <>
-      <form>
-        <Select options={mockOptions} label={t('SelectCourses')} required name="courses" />
-        <StyledButton>{t('Predict')}</StyledButton>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Select
+          options={(courses || []).map((c, index) => {
+            return {
+              text: `${c.courseId} - ${t(c.courseName)}`,
+              color: TAG_COLOR[index],
+              value: c.courseId,
+            };
+          })}
+          label={t('SelectCourses')}
+          required
+          {...register('courses')}
+          errorMessage={errorMessage}
+          maxPerView={8}
+          onSelect={handleSelectOption}
+        />
+        <StyledButton type="submit">{t('Predict')}</StyledButton>
       </form>
-      <Table {...tableData2}/>
+      {!!predictions.length ? (
+        <StyledTable {...predictionsTable} />
+      ) : (
+        <div style={{ height: 400 }} />
+      )}
     </>
   );
 };
+
+const StyledTable = styled(Table)`
+  .th-0,
+  .td-0 {
+    width: 35%;
+  }
+  .td-2,
+  .th-2 {
+    width: 15%;
+  }
+  .th-1,
+  .td-1 {
+    width: 50%;
+  }
+`;
 
 const StyledButton = styled(Button)`
   margin: auto;

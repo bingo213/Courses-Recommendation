@@ -30,7 +30,7 @@ const getIconByType = (type: NotificationProps['type']) => {
 export const Notification: React.FC<NotificationProps> = ({
   title,
   message,
-  duration = 5000,
+  duration = 4000,
   type = 'info',
   show,
   onClose,
@@ -69,7 +69,7 @@ const Wrapper = styled.div`
   width: 320px;
   padding: 12px;
   position: fixed;
-  transition: right 0.8s;
+  transition: right 0.5s;
   top: 12px;
   color: white;
   border-radius: 4px;

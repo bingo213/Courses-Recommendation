@@ -22,7 +22,7 @@ i18n
     .init({
         resources,
         fallbackLng: DEFAULT_LANGUAGE,
-        debug: true,
+        debug: false, //disable console log
         interpolation: {
             escapeValue: false // not needed for react as it escapes by default
         }

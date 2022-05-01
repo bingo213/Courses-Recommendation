@@ -13,6 +13,7 @@ export interface InputProps {
   note?: string;
   type: 'text' | 'number' | 'password';
   value?: string | number;
+  onChangeValue?: (value: string | number) => void;
   style?: CSSProperties;
 }
 
@@ -31,6 +32,7 @@ export const Input: React.FC<InputProps> = React.forwardRef<
       note,
       type,
       value,
+      onChangeValue,
       ...rest
     }: InputProps,
     ref
@@ -65,6 +67,7 @@ export const Input: React.FC<InputProps> = React.forwardRef<
             placeholder={placeholder}
             ref={ref}
             errorMessage={errorMessage}
+            onChange={e => onChangeValue && onChangeValue(e.target.value)}
           />
           {showPasswordIcon.current && (
             <Icon onClick={() => setShowPassword(!showPassword)}>

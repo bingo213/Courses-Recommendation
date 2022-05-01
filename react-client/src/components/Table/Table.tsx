@@ -12,12 +12,13 @@ export interface TableRowProps {
 
 export interface TableProps {
   columns: string[];
-  data: TableRowProps[];
+  data?: TableRowProps[];
+  className?: string;
 }
 
-export const Table: React.FC<TableProps> = ({ columns, data }: TableProps) => {
+export const Table: React.FC<TableProps> = ({ columns, data, className }: TableProps) => {
   return (
-    <TableWrapper>
+    <TableWrapper className={className}>
       <TableRow className="table-head">
         {columns.map((col, index) => (
           <TableHead key={index} className={`th-${index}`}>
@@ -25,7 +26,7 @@ export const Table: React.FC<TableProps> = ({ columns, data }: TableProps) => {
           </TableHead>
         ))}
       </TableRow>
-      {data.map((val, index) => {
+      {(data || []).map((val, index) => {
         return (
           <TableRow key={index} className="table-data">
             <TableData className="td-0">

@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { Account, Login, MyGrade, Predict, Recommend, SignUp } from "../pages";
+import { Profile, Login, MyGrade, Predict, Recommend } from "../pages";
 
 interface RouteProps {
     name: string;
@@ -14,11 +14,6 @@ export const routes: RouteProps[] = [
         component: <Login />
     },
     {
-        name: 'Sign Up',
-        path: 'sign_up',
-        component: <SignUp />
-    },
-    {
         name: 'Recommend',
         path: 'recommend',
         component: <Recommend />
@@ -26,7 +21,7 @@ export const routes: RouteProps[] = [
     {
         name: 'Account',
         path: 'account',
-        component: <Account />
+        component: <Profile />
     },
     {
         name: 'My Grade',

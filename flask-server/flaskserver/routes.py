@@ -1,21 +1,17 @@
 from flaskserver import db, app, bcrypt, Account, Orientation, OrientationSchema, Grade, Course,\
-                        StudentSchema, Student, GradeSchema, AccountSchema
+                        StudentSchema, Student, GradeSchema, AccountSchema, CourseSchema
 from flask import request, jsonify
-from flask_jwt_extended import create_access_token, set_access_cookies,\
-                                unset_jwt_cookies, get_jwt_identity, get_jwt, jwt_required
+from flask_jwt_extended import create_access_token, set_access_cookies, jwt_required,\
+                                unset_jwt_cookies, get_jwt_identity, get_jwt
 from datetime import datetime, timedelta, timezone
 import joblib
 from os.path import dirname, join, realpath
 from marshmallow import ValidationError
 
-with open(
-    join(dirname(realpath(__file__)), "predict_model.pkl"), "rb"
-) as f:
+with open(join(dirname(realpath(__file__)), "predict_model.pkl"), "rb") as f:
     model = joblib.load(f)
 
-with open(
-    join(dirname(realpath(__file__)), "predictions.pkl"), "rb"
-) as f:
+with open(join(dirname(realpath(__file__)), "predictions.pkl"), "rb") as f:
     predictions = joblib.load(f)
 
 selective_courses = ['INT3105', 'INT3110', 'INT3117', 'INT3133', 'INT3217',
@@ -26,16 +22,20 @@ selective_courses = ['INT3105', 'INT3110', 'INT3117', 'INT3133', 'INT3217',
 
 courses_without_data = ['INT3108', 'INT3135', 'INT3136', 'INT3123', 'INT3138', 'INT2041', 'INT3137', 'BSA2001', 'BSA2006', 'ELT2031']
 
-def get_orientation_by_course_id(courseId):
-    orientationId = Course.query.filter_by(id=courseId).first().orientation
-    orientation = Orientation.query.filter_by(id=orientationId).first()
-    orientation_schema = OrientationSchema()
-    result = orientation_schema.dump(orientation)
+def get_course_by_id(courseId):
+    course = db.session.query(Course.id.label("courseId"), Course.courseName, Orientation.id.label("orientationId"), Orientation.orientationName)\
+                .join(Orientation).filter(Course.id == courseId).first()
+    course_schema = CourseSchema()
+    result = course_schema.dump(course)
     return result
 
 def convert_prediction(prediction):
-    orientation = get_orientation_by_course_id(prediction.iid)
-    return {"course": prediction.iid, "grade": prediction.est, "orientationId": orientation["id"], "orientationName": orientation["orientationName"]}
+    course = get_course_by_id(prediction.iid)
+    return {"courseId": prediction.iid,\
+            "courseName": course["courseName"],\
+            "predictedGrade": prediction.est,\
+            "orientationId": course["orientationId"],\
+            "orientationName": course["orientationName"]}
 
 def calculate_student_average(studentId):
     studentGrade = [student.grade for student in Grade.query.filter_by(studentId=studentId).all()]
@@ -45,18 +45,22 @@ def predict_course_having_no_data(studentId):
     averageGrade = calculate_student_average(studentId)
     
     def convert(courseId):
-        orientation = get_orientation_by_course_id(courseId)
-        return {"course": courseId, "grade": averageGrade,  "orientationId": orientation["id"], "orientationName": orientation["orientationName"]}
+        course = get_course_by_id(courseId)
+        return {"courseId": courseId,\
+                "courseName": course["courseName"],\
+                "predictedGrade": averageGrade,\
+                "orientationId": course["orientationId"],\
+                "orientationName": course["orientationName"]}
     
     return list(map(convert, courses_without_data))
 
 def get_top_n_predictions(predictions, n, orientationIdList):
     if len(orientationIdList) > 0:
-        filterd_courses = [x for x in predictions if x["course"] in selective_courses and x["orientationId"] in orientationIdList]
+        filterd_courses = [x for x in predictions if x["courseId"] in selective_courses and x["orientationId"] in orientationIdList]
     else:
-        filterd_courses = [x for x in predictions if x["course"] in selective_courses]
+        filterd_courses = [x for x in predictions if x["courseId"] in selective_courses]
     
-    sorted_predictions = sorted([x for x in filterd_courses], key=lambda x: x["grade"], reverse=True)
+    sorted_predictions = sorted([x for x in filterd_courses], key=lambda x: x["predictedGrade"], reverse=True)
 
     return sorted_predictions[0:n]
 
@@ -107,12 +111,13 @@ def recommend_courses():
     # Access the identity of the current user with get_jwt_identity
     current_user_id = get_jwt_identity()
 
-    numberOfCourses = request.json.get("numberOfCourses", None)
+    numberOfCourses = int(request.json.get("numberOfCourses", None))
     orientations = request.json.get("orientations", [])
+    print(numberOfCourses)
 
     if numberOfCourses is None:
         return {"msg": "Number of courses is required"}, 400
-    if numberOfCourses > 20:
+    if numberOfCourses > 32:
         return {"msg": "Number of courses is greater than the allowed number"}, 400
     if numberOfCourses < 1:
         return {"msg": "Number of courses is less than allowed number"}, 400
@@ -140,7 +145,7 @@ def predict_courses():
 
     return jsonify({"studentId": current_user_id, "predictions": result}), 200
 
-@app.route("/student", methods=["GET", "PATCH"])
+@app.route("/profile", methods=["GET", "PATCH"])
 @jwt_required()
 def setting_account():
     # Access the identity of the current user with get_jwt_identity
@@ -168,11 +173,15 @@ def update_password():
     # Access the identity of the current user with get_jwt_identity
     current_user_id = get_jwt_identity()
 
-    password = request.json.get("password")
+    password = request.json.get("password", None)
+    if password is None:
+        return {"msg": "Password cannot be null"}, 400
+
     account_schema = AccountSchema()
     try: 
         account = Account(account_schema.load({"password": password}))
-        db.session.query(Account).filter(Account.username==current_user_id).update({"password": bcrypt.generate_password_hash(password).decode("utf8")})
+        db.session.query(Account).filter(Account.username==current_user_id)\
+                    .update({"password": bcrypt.generate_password_hash(password).decode("utf8")})
         db.session.commit() 
         return jsonify(msg='Password updated successfully', studentId=current_user_id), 200   
     except ValidationError as exception_message: 
@@ -184,8 +193,17 @@ def get_all_grades():
     # Access the identity of the current user with get_jwt_identity
     current_user_id = get_jwt_identity()
 
-    grade = db.session.query(Grade.grade, Grade.courseId, Course.courseName).join(Course).filter(Grade.studentId == current_user_id).all()
+    grade = db.session.query(Grade.grade, Grade.courseId, Course.courseName)\
+                        .join(Course)\
+                        .filter(Grade.studentId == current_user_id)\
+                        .all()
     grade_schema = GradeSchema(many=True)
-    re = grade_schema.dump(grade)
+    result = grade_schema.dump(grade)
+    return jsonify(msg="Get all grades successful", grades=result, gradeAverage=calculate_student_average(current_user_id)), 200
 
-    return jsonify({"msg": re}), 200
+@app.route("/courses", methods=["GET"])
+def get_all_courses():
+    courses = db.session.query(Course.id.label("courseId"), Course.courseName).all()
+    course_schema = CourseSchema(many=True)
+    result = course_schema.dump(courses)
+    return jsonify(msg="Get all courses successful", courses=result)

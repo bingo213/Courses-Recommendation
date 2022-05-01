@@ -17,6 +17,7 @@ type FormValues = {
 export const Login: React.FC = () => {
   const { t } = useTranslation();
   const [showNoti, setShowNoti] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const location = useLocation() as any;
   const { setToken, removeToken } = useToken();
@@ -44,6 +45,9 @@ export const Login: React.FC = () => {
       })
       .catch(error => {
         console.log(error);
+        if (error?.response) {
+          setErrorMessage(t('IncorrectUsernameOrPassword'));
+        } else setErrorMessage(t('AnErrorOccuredPleaseTryAgain'));
         setShowNoti(true);
       });
   };
@@ -96,7 +100,7 @@ export const Login: React.FC = () => {
         show={showNoti}
         onClose={() => setShowNoti(false)}
         title={t('Error')}
-        message={t('IncorrectUsernameOrPassword')}
+        message={errorMessage}
       />
     </Wrapper>
   );

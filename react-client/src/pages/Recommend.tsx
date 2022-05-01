@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { Navigate, useLocation } from 'react-router';
 import styled from 'styled-components';
 import { orientationApi } from '../apis';
-import { Button, Input, TAG_COLOR } from '../atoms';
-import { OptionProps, Select, Table } from '../components';
-import { tableData1 } from '../components/Table/__mocks__';
-import { IOrientationResponse } from '../interfaces';
+import { serviceApi } from '../apis';
+import { Button, Input } from '../atoms';
+import { OptionProps, Select, Table, TableProps } from '../components';
+import {
+  CookedOrientationProps,
+  cookOrientations,
+  cookRecommendation,
+} from '../helpers/recommend';
+import { IRecommendation } from '../interfaces';
 
 type FormValues = {
   numberOfCourses: number;
@@ -15,6 +21,11 @@ type FormValues = {
 
 export const Recommend: React.FC = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const orient = useRef<string[]>([]);
+
+  const [orientations, setOrientations] = useState<CookedOrientationProps[]>();
+  const [recommendations, setRecommendations] = useState<IRecommendation[]>([]);
   const {
     register,
     handleSubmit,
@@ -22,19 +33,31 @@ export const Recommend: React.FC = () => {
     setValue,
   } = useForm<FormValues>();
 
-  const onSubmit: SubmitHandler<FormValues> = data => {
-    console.log(data);
+  const recommendationsTable: TableProps = {
+    columns: [t('Course'), t('PredictedGrade'), t('Orientation')],
+    data:
+      orientations &&
+      recommendations &&
+      (recommendations || []).map(r =>
+        cookRecommendation(
+          r,
+          orientations.find(o => o.id === r.orientationId)?.color || '',
+          t
+        )
+      ),
   };
 
-  const orient = useRef<string[]>([]);
-
-  const [orientations, setOrientations] =
-    useState<IOrientationResponse['orientations']>();
+  const onSubmit: SubmitHandler<FormValues> = data => {
+    serviceApi
+      .recommend(data)
+      .then(res => setRecommendations(res.recommendations))
+      .catch(error => console.log(error));
+  };
 
   useEffect(() => {
     orientationApi.getAll().then(data => {
       let elements = data.orientations.filter(e => e.id !== 'NONE');
-      setOrientations(elements);
+      setOrientations(cookOrientations(elements));
     });
   }, []);
 
@@ -55,7 +78,7 @@ export const Recommend: React.FC = () => {
       errors?.numberOfCourses?.type === 'max' ||
       errors?.numberOfCourses?.type === 'min'
     )
-      return t('InputNumberInRange{{min}}-{{max}}', { min: 1, max: 20 });
+      return t('InputNumberInRange{{min}}-{{max}}', { min: 1, max: 32 });
   };
   return (
     <>
@@ -66,26 +89,27 @@ export const Recommend: React.FC = () => {
             label={t('NumberOfCourses')}
             note={t('InputNumberYouWantToSuggest{{min}}-{{max}}', {
               min: 1,
-              max: 20,
+              max: 32,
             })}
             required
             style={{ flex: 1, marginRight: 48 }}
             {...register('numberOfCourses', {
               required: true,
               min: 1,
-              max: 20,
+              max: 32,
             })}
             errorMessage={validateNumberOfCourses()}
           />
           <Select
             label={t('SelectOrientations')}
-            options={orientations?.map((o, index) => {
+            maxPerView={5}
+            options={(orientations || []).map(o => {
               return {
                 text: o.orientationName,
                 value: o.id,
-                color: TAG_COLOR[index],
+                color: o.color,
               };
-            }) || []}
+            })}
             note={t('CanSelectMoreThanOne')}
             style={{ flex: 3 }}
             {...register('orientations')}
@@ -97,7 +121,11 @@ export const Recommend: React.FC = () => {
           {t('Recommend')}
         </Button>
       </StyledForm>
-      <Table {...tableData1} />
+      {!!recommendations.length ? (
+        <Table {...recommendationsTable} />
+      ) : (
+        <div style={{ height: 300 }} />
+      )}
     </>
   );
 };
