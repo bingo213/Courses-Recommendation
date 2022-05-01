@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { AngleDown, Avatar, COLORS, Logout } from '../../atoms';
-import { REGIONS } from '../../constants';
+import { DEFAULT_AVATAR, REGIONS } from '../../constants';
 import { Dropdown, DropdownItem } from '../Dropdown';
 import { useTranslation } from 'react-i18next';
 import { userApi } from '../../apis';
@@ -25,7 +25,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const { t } = useTranslation();
   const { currentLanguage, changeLanguage } = useLanguage();
   const currentRegion = REGIONS[currentLanguage];
-  console.log(currentLanguage)
+  console.log(currentLanguage);
   const localizationMenu = (
     <>
       {Object.values(REGIONS).map(
@@ -50,7 +50,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         style={{ width: 150 }}
         onClick={() => {
           userApi.logout().then(() => {
-            // removeUserInfo && removeUserInfo()
             navigate('/login');
           });
         }}
@@ -83,10 +82,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               avatar ? (
                 <Avatar image={avatar} size="small" />
               ) : (
-                <Avatar
-                  size="small"
-                  image="https://chiase24.com/wp-content/uploads/2022/02/tang-hap-hanh-anh-avatar-hai-haeac-nhan-la-ba_t-caea_i-1.jpg"
-                />
+                <Avatar size="small" image={DEFAULT_AVATAR} />
               )
             }
             suffixIcon={<AngleDown width={24} fill={COLORS.textSecondary} />}

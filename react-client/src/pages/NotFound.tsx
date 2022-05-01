@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import notFoundImg from '../assets/not_found.png';
 
-export const NotFound: React.FC<{}> = () => {
+export const NotFound: React.FC = () => {
   return (
     <Wrapper>
       <img src={notFoundImg} alt="404 not found" />

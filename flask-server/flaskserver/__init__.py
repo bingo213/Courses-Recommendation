@@ -32,5 +32,11 @@ from flaskserver.models import Account, Course, Student, Grade, Orientation, Ori
 db.create_all()
 db.session.commit()
 
+from flaskserver.constants import selective_courses, courses_without_data, predictions, model
+
+from flaskserver.helpers import get_course_by_id, convert_prediction, calculate_student_average,\
+                                predict_course_having_no_data, get_top_n_predictions
+
 from flaskserver.routes import login, logout, get_orientations, recommend_courses, get_all_courses,\
                                 predict_courses, setting_account, update_password, get_all_grades
+

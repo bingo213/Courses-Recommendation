@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Navigate, useLocation } from 'react-router';
 import styled from 'styled-components';
 import { orientationApi } from '../apis';
 import { serviceApi } from '../apis';
@@ -21,7 +20,6 @@ type FormValues = {
 
 export const Recommend: React.FC = () => {
   const { t } = useTranslation();
-  const location = useLocation();
   const [activeOrientations, setActiveOrientations] = useState<string[]>([]);
 
   const [orientations, setOrientations] = useState<CookedOrientationProps[]>();

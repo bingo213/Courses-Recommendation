@@ -1,68 +1,13 @@
 from flaskserver import db, app, bcrypt, Account, Orientation, OrientationSchema, Grade, Course,\
-                        StudentSchema, Student, GradeSchema, AccountSchema, CourseSchema
+                        StudentSchema, Student, GradeSchema, AccountSchema, CourseSchema,\
+                        get_course_by_id, get_top_n_predictions, predict_course_having_no_data,\
+                        calculate_student_average, convert_prediction, selective_courses, courses_without_data,\
+                        model, predictions
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, set_access_cookies, jwt_required,\
                                 unset_jwt_cookies, get_jwt_identity, get_jwt
 from datetime import datetime, timedelta, timezone
-import joblib
-from os.path import dirname, join, realpath
 from marshmallow import ValidationError
-
-with open(join(dirname(realpath(__file__)), "predict_model.pkl"), "rb") as f:
-    model = joblib.load(f)
-
-with open(join(dirname(realpath(__file__)), "predictions.pkl"), "rb") as f:
-    predictions = joblib.load(f)
-
-selective_courses = ['INT3105', 'INT3110', 'INT3117', 'INT3133', 'INT3217',
-        'INT3122', 'INT3306', 'INT3505', 'INT3111', 'INT3206', 'INT3213', 'INT3307',
-        'INT3301', 'INT3136', 'INT3402', 'INT3407', 'INT3405', 'INT3406', 'INT3411', 
-        'INT3413', 'INT3512', 'INT3409', 'INT3121', 'INT3403', 'INT3404', 'INT3412', 
-        'INT3108', 'INT3135', 'INT3136', 'INT3123', 'INT3138', 'INT2041', 'INT3137']
-
-courses_without_data = ['INT3108', 'INT3135', 'INT3136', 'INT3123', 'INT3138', 'INT2041', 'INT3137', 'BSA2001', 'BSA2006', 'ELT2031']
-
-def get_course_by_id(courseId):
-    course = db.session.query(Course.id.label("courseId"), Course.courseName, Orientation.id.label("orientationId"), Orientation.orientationName)\
-                .join(Orientation).filter(Course.id == courseId).first()
-    course_schema = CourseSchema()
-    result = course_schema.dump(course)
-    return result
-
-def convert_prediction(prediction):
-    course = get_course_by_id(prediction.iid)
-    return {"courseId": prediction.iid,\
-            "courseName": course["courseName"],\
-            "predictedGrade": prediction.est,\
-            "orientationId": course["orientationId"],\
-            "orientationName": course["orientationName"]}
-
-def calculate_student_average(studentId):
-    studentGrade = [student.grade for student in Grade.query.filter_by(studentId=studentId).all()]
-    return sum(studentGrade)/len(studentGrade)
-
-def predict_course_having_no_data(studentId):
-    averageGrade = calculate_student_average(studentId)
-    
-    def convert(courseId):
-        course = get_course_by_id(courseId)
-        return {"courseId": courseId,\
-                "courseName": course["courseName"],\
-                "predictedGrade": averageGrade,\
-                "orientationId": course["orientationId"],\
-                "orientationName": course["orientationName"]}
-    
-    return list(map(convert, courses_without_data))
-
-def get_top_n_predictions(predictions, n, orientationIdList):
-    if len(orientationIdList) > 0:
-        filterd_courses = [x for x in predictions if x["courseId"] in selective_courses and x["orientationId"] in orientationIdList]
-    else:
-        filterd_courses = [x for x in predictions if x["courseId"] in selective_courses]
-    
-    sorted_predictions = sorted([x for x in filterd_courses], key=lambda x: x["predictedGrade"], reverse=True)
-
-    return sorted_predictions[0:n]
 
 @app.route('/login', methods=['POST'])
 def login():

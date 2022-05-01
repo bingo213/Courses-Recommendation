@@ -210,5 +210,4 @@ const Setting = styled.div`
 
 const Label = styled.label`
   margin-right: 24px;
-  font-size: 15px;
 `;

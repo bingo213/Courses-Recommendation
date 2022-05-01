@@ -1,10 +1,11 @@
 import { getValue } from '@testing-library/user-event/dist/utils';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { userApi } from '../../apis';
 import { Button, COLORS, Input, NotificationProps } from '../../atoms';
+import { DatePicker } from '../../components';
 import { IUpdateRequest } from '../../interfaces';
 
 interface InformationFormProps {
@@ -21,6 +22,7 @@ export const InformationForm: React.FC<InformationFormProps> = ({
   setTypeNoti,
 }: InformationFormProps) => {
   const { t } = useTranslation();
+  const [date, setDate] = useState<Date>();
 
   const {
     register,
@@ -39,6 +41,11 @@ export const InformationForm: React.FC<InformationFormProps> = ({
       setValue('className', student.className);
     });
   }, []);
+
+  useEffect(() => {
+    if (date)
+      setValue('dateOfBirth', date.toDateString(), { shouldDirty: true });
+  }, [date]);
 
   const onSubmit = (data: FormValues) => {
     userApi
@@ -76,11 +83,12 @@ export const InformationForm: React.FC<InformationFormProps> = ({
           })}
           errorMessage={errors.fullName?.message}
         />
-        <StyledInput
+        <DatePicker
           label={t('DateOfBirth')}
-          type="text"
-          variant="box"
           {...register('dateOfBirth')}
+          date={date}
+          onSelectDate={setDate}
+          style={{ marginBottom: 32 }}
         />
         <StyledInput
           label={t('ClassName')}

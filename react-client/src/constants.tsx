@@ -2,11 +2,13 @@ import logo from './assets/logo.png';
 import { IRegion } from './interfaces';
 import vietnamFlag from './assets/vietnam.png';
 import englandFlag from './assets/england.png';
+import defaultAvatar from './assets/default_avatar.png'
 import { NavElement } from './components';
 import { Account, COLORS, GrowthGraph, House, Clipboard } from './atoms';
 
 export const APP_NAME = 'ScoreU';
 export const LOGO = logo;
+export const DEFAULT_AVATAR = defaultAvatar;
 
 export const LOCAL_STORAGE = {
   LOCALIZATION: 'localization',
