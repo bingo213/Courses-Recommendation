@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORAGE } from '../constants';
 
 export const axiosClient = axios.create({
@@ -12,8 +12,16 @@ export const authClient = axios.create({
   baseURL: 'http://127.0.0.1:5000/',
   headers: {
     'content-type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem(LOCAL_STORAGE.TOKEN)}`,
   },
+});
+
+authClient.interceptors.request.use((config: AxiosRequestConfig<any>) => {
+  const token = localStorage.getItem(LOCAL_STORAGE.TOKEN);
+
+  if (!!token && !!config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config
 });
 
 authClient.interceptors.response.use(

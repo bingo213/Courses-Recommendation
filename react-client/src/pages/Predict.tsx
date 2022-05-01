@@ -28,7 +28,6 @@ export const Predict: React.FC<{}> = () => {
   }, []);
 
   const onSubmit: SubmitHandler<FormValues> = data => {
-    console.log(data);
     if (!data.courses || data.courses.length === 0)
       setErrorMessage('ThisIsRequiredField');
     serviceApi
