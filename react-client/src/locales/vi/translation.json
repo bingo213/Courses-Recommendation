@@ -133,5 +133,6 @@
   "SelectChartType": "Chọn loại biểu đồ",
   "BarChart": "Biểu đồ cột",
   "LineChart": "Biểu đồ đường",
-  "With": "Cùng"
+  "With": "Cùng",
+  "SortedByCourse": "Sắp xếp theo tên môn học"
 }

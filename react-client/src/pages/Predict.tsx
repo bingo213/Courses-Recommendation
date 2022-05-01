@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -14,10 +14,10 @@ type FormValues = {
 
 export const Predict: React.FC<{}> = () => {
   const { t } = useTranslation();
+  const [activeCourses, setActiveCourses] = useState<string[]>([])
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [courses, setCourses] = useState<ICourse[]>();
   const [predictions, setPredictions] = useState<IPrediction[]>([]);
-  const courseRef = useRef<string[]>([]);
   const { register, handleSubmit, setValue } = useForm<FormValues>();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export const Predict: React.FC<{}> = () => {
       .then(data => setCourses(data.courses))
       .catch(error => console.log(error));
   }, []);
-  console.log(courses);
+
   const onSubmit: SubmitHandler<FormValues> = data => {
     console.log(data);
     if (!data.courses || data.courses.length === 0)
@@ -37,9 +37,18 @@ export const Predict: React.FC<{}> = () => {
       .catch(error => console.log(error));
   };
 
+  useEffect(() => {
+    setValue('courses', activeCourses);
+  }, [activeCourses]);
+
   const handleSelectOption = (opt: OptionProps) => {
-    courseRef.current.push(opt.value);
-    setValue('courses', courseRef.current);
+    if (!activeCourses.includes(opt.value)) {
+      setActiveCourses(o => [...o, opt.value]);
+    }
+  };
+
+  const handleRemoveOption = (opt: OptionProps) => {
+    setActiveCourses(prev => [...prev.filter(p => p !== opt.value)]);
   };
 
   const predictionsTable: TableProps = {
@@ -58,12 +67,15 @@ export const Predict: React.FC<{}> = () => {
               value: c.courseId,
             };
           })}
+          activeOptions={activeCourses}
+          setActiveOptions={setActiveCourses}
           label={t('SelectCourses')}
           required
           {...register('courses')}
           errorMessage={errorMessage}
           maxPerView={8}
           onSelect={handleSelectOption}
+          onRemoveOption={handleRemoveOption}
         />
         <StyledButton type="submit">{t('Predict')}</StyledButton>
       </form>

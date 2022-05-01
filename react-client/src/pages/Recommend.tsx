@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation } from 'react-router';
@@ -22,7 +22,7 @@ type FormValues = {
 export const Recommend: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
-  const orient = useRef<string[]>([]);
+  const [activeOrientations, setActiveOrientations] = useState<string[]>([]);
 
   const [orientations, setOrientations] = useState<CookedOrientationProps[]>();
   const [recommendations, setRecommendations] = useState<IRecommendation[]>([]);
@@ -61,14 +61,18 @@ export const Recommend: React.FC = () => {
     });
   }, []);
 
+  useEffect(() => {
+    setValue('orientations', activeOrientations);
+  }, [activeOrientations]);
+
   const handleSelectOption = (opt: OptionProps) => {
-    orient.current.push(opt.value);
-    setValue('orientations', orient.current);
+    if (!activeOrientations.includes(opt.value)) {
+      setActiveOrientations(o => [...o, opt.value]);
+    }
   };
 
   const handleRemoveOption = (opt: OptionProps) => {
-    orient.current = orient.current.filter(e => e !== opt.value);
-    setValue('orientations', orient.current);
+    setActiveOrientations(prev => [...prev.filter(p => p !== opt.value)]);
   };
 
   const validateNumberOfCourses = () => {
@@ -110,6 +114,8 @@ export const Recommend: React.FC = () => {
                 color: o.color,
               };
             })}
+            activeOptions={activeOrientations}
+            setActiveOptions={setActiveOrientations}
             note={t('CanSelectMoreThanOne')}
             style={{ flex: 3 }}
             {...register('orientations')}

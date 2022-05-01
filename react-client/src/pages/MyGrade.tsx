@@ -32,7 +32,7 @@ ChartJS.register(
 enum OrderEnum {
   ASC = 'asc',
   DESC = 'desc',
-  UNSORT = 'unsorted',
+  SORTCOURSE = 'sortCorse',
 }
 
 enum ChartType {
@@ -47,7 +47,7 @@ const sortGrade = (grades: IGrade[], order: OrderEnum) => {
       return gradeCopy.sort((a, b) => a.grade - b.grade);
     case OrderEnum.DESC:
       return gradeCopy.sort((a, b) => b.grade - a.grade);
-    case OrderEnum.UNSORT:
+    case OrderEnum.SORTCOURSE:
     default:
       return gradeCopy;
   }
@@ -56,7 +56,7 @@ const sortGrade = (grades: IGrade[], order: OrderEnum) => {
 export const MyGrade: React.FC<{}> = () => {
   const { t } = useTranslation();
   const [grades, setGrades] = useState<IGradeResponse>();
-  const [order, setOrder] = useState<OrderEnum>(OrderEnum.UNSORT);
+  const [order, setOrder] = useState<OrderEnum>(OrderEnum.SORTCOURSE);
   const [chartType, setChartType] = useState<ChartType>(ChartType.BAR);
   const [show, setShow] = useState(false);
 
@@ -85,11 +85,11 @@ export const MyGrade: React.FC<{}> = () => {
         <Label>{t('SortOrder')}</Label>
         <Select
           onChange={opt => setOrder(opt.target.value as OrderEnum)}
-          defaultValue={OrderEnum.UNSORT}
+          defaultValue={OrderEnum.SORTCOURSE}
         >
           <option value={OrderEnum.ASC}>{t('AscendingGrade')}</option>
           <option value={OrderEnum.DESC}>{t('DescendingGrade')}</option>
-          <option value={OrderEnum.UNSORT}>{t('UnsortedGrade')}</option>
+          <option value={OrderEnum.SORTCOURSE}>{t('SortedByCourse')}</option>
         </Select>
       </Setting>
       <StyledTable show={show}>

@@ -15,3 +15,16 @@ export const authClient = axios.create({
     Authorization: `Bearer ${localStorage.getItem(LOCAL_STORAGE.TOKEN)}`,
   },
 });
+
+authClient.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    if (error.response?.status === 401) {
+      localStorage.setItem(LOCAL_STORAGE.TOKEN, '');
+      localStorage.setItem(LOCAL_STORAGE.USER, '');
+    }
+    return Promise.reject(error);
+  }
+);

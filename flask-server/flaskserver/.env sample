@@ -1,0 +1,3 @@
+SECRET_KEY="hardsecretkey"
+SQLALCHEMY_DATABASE_URI="mysql://root:<password>@localhost/course_recommend?charset=utf8"
+SQLALCHEMY_TRACK_MODIFICATIONS=False

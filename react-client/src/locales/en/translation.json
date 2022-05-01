@@ -133,5 +133,6 @@
   "SelectChartType": "Select chart type",
   "BarChart": "Bar chart",
   "LineChart": "Line chart",
-  "With": "With"
+  "With": "With",
+  "SortedByCourse": "Sorted by courses"
 }

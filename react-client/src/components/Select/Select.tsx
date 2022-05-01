@@ -14,6 +14,8 @@ export interface SelectProps {
   name: string;
   errorMessage?: string;
   options: OptionProps[];
+  activeOptions?: string[];
+  setActiveOptions?: React.Dispatch<React.SetStateAction<string[]>>;
   label?: string;
   note?: string;
   required?: boolean;
@@ -32,6 +34,8 @@ export const Select: React.FC<SelectProps> = React.forwardRef<
       name,
       errorMessage,
       options = [],
+      activeOptions,
+      setActiveOptions,
       label,
       note,
       required,
@@ -42,8 +46,7 @@ export const Select: React.FC<SelectProps> = React.forwardRef<
     }: SelectProps,
     ref
   ) => {
-    const {t} = useTranslation()
-    const [activeOptions, setActiveOptions] = useState<OptionProps[]>([]);
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,9 +66,6 @@ export const Select: React.FC<SelectProps> = React.forwardRef<
 
     const onSelectOption = (option: OptionProps): void => {
       onSelect && onSelect(option);
-      if (!activeOptions.includes(option)) {
-        setActiveOptions(opt => [...opt, option]);
-      }
     };
     return (
       <Wrapper {...rest} ref={ref}>
@@ -89,20 +89,25 @@ export const Select: React.FC<SelectProps> = React.forwardRef<
         <StyledSelect ref={menuRef}>
           <Field onClick={() => setShow(!show)} error={!!errorMessage}>
             <ActiveOptions>
-              {!!activeOptions.length &&
-                activeOptions.map((option, index) => (
-                  <Tag
-                    key={index}
-                    title={option.text}
-                    color={option.color}
-                    onClose={() => {
-                      setActiveOptions(prevOpts =>
-                        prevOpts.filter(opt => opt.value !== option.value)
-                      );
-                      onRemoveOption && onRemoveOption(option);
-                    }}
-                  />
-                ))}
+              {(activeOptions || [])
+                .map(o => options.find(opt => opt.value === o))
+                .map(
+                  (option, index) =>
+                    option && (
+                      <Tag
+                        key={index}
+                        title={option.text}
+                        color={option.color}
+                        onClose={() => {
+                          setActiveOptions &&
+                            setActiveOptions(prevOpts =>
+                              prevOpts.filter(opt => opt !== option.value)
+                            );
+                          onRemoveOption && onRemoveOption(option);
+                        }}
+                      />
+                    )
+                )}
             </ActiveOptions>
             <AngleDown
               width={24}
@@ -115,11 +120,13 @@ export const Select: React.FC<SelectProps> = React.forwardRef<
               <Option
                 key={index}
                 onClick={() =>
-                  !activeOptions.includes(opt) && onSelectOption(opt)
+                  activeOptions &&
+                  !activeOptions.includes(opt.value) &&
+                  onSelectOption(opt)
                 }
               >
                 {t(opt.text)}
-                {activeOptions.includes(opt) && (
+                {activeOptions && activeOptions.includes(opt.value) && (
                   <Tick width={24} fill={COLORS.primary500} />
                 )}
               </Option>
