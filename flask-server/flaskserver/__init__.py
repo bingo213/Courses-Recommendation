@@ -13,7 +13,7 @@ load_dotenv()
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"*": {"origins": os.getenv("ORIGINS")}})
 
 #SqlAlchemy Database Configuration With MySql
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
