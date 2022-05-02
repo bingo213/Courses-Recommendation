@@ -2,14 +2,14 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORAGE } from '../constants';
 
 export const axiosClient = axios.create({
-  baseURL: 'http://127.0.0.1:5000/',
+  baseURL: process.env.BASE_URL,
   headers: {
     'content-type': 'application/json',
   },
 });
 
 export const authClient = axios.create({
-  baseURL: 'http://127.0.0.1:5000/',
+  baseURL: process.env.BASE_URL,
   headers: {
     'content-type': 'application/json',
   },
