@@ -2,14 +2,14 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORAGE } from '../constants';
 
 export const axiosClient = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: process.env.REACT_APP_API_ENDPOINT,
   headers: {
     'content-type': 'application/json',
   },
 });
 
 export const authClient = axios.create({
-  baseURL: process.env.BASE_URL,
+  baseURL: process.env.REACT_APP_API_ENDPOINT,
   headers: {
     'content-type': 'application/json',
   },
