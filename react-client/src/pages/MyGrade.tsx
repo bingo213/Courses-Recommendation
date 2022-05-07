@@ -92,10 +92,10 @@ export const MyGrade: React.FC<{}> = () => {
           <option value={OrderEnum.SORTCOURSE}>{t('SortedByCourse')}</option>
         </Select>
       </Setting>
-      <Loading isLoading={!gradeTable}>
+      <Loading isLoading={!gradeTable.data?.length}>
         <StyledTable show={show}>
           <Table {...gradeTable} />
-          {!!gradeTable && (
+          {!!gradeTable.data?.length && (
             <Decorator show={show} onClick={() => setShow(!show)}>
               {show ? t('Collapse') : t('ShowMore')}
             </Decorator>
