@@ -17,7 +17,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { COLORS } from '../atoms';
+import { COLORS, Loading } from '../atoms';
 
 ChartJS.register(
   CategoryScale,
@@ -92,12 +92,16 @@ export const MyGrade: React.FC<{}> = () => {
           <option value={OrderEnum.SORTCOURSE}>{t('SortedByCourse')}</option>
         </Select>
       </Setting>
-      <StyledTable show={show}>
-        <Table {...gradeTable} />
-        <Decorator show={show} onClick={() => setShow(!show)}>
-          {show ? t('Collapse') : t('ShowMore')}
-        </Decorator>
-      </StyledTable>
+      <Loading isLoading={!gradeTable}>
+        <StyledTable show={show}>
+          <Table {...gradeTable} />
+          {!!gradeTable && (
+            <Decorator show={show} onClick={() => setShow(!show)}>
+              {show ? t('Collapse') : t('ShowMore')}
+            </Decorator>
+          )}
+        </StyledTable>
+      </Loading>
       <ScoreAverage>
         {t('GradeAverage')}:{' '}
         <span>

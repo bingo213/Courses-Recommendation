@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import statisticIllutration from '../assets/statistic_illutration.png';
-import { Button, COLORS, Input, Notification } from '../atoms';
+import { Button, COLORS, Input, Loading, Notification } from '../atoms';
 import { LOGO } from '../constants';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { userApi } from '../apis';
@@ -18,6 +18,7 @@ export const Login: React.FC = () => {
   const { t } = useTranslation();
   const [showNoti, setShowNoti] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation() as any;
   const { setToken, removeToken } = useToken();
@@ -34,6 +35,7 @@ export const Login: React.FC = () => {
     formState: { errors },
   } = useForm<FormValues>();
   const onSubmit: SubmitHandler<FormValues> = data => {
+    setLoading(true);
     userApi
       .login(data)
       .then(userInfo => {
@@ -49,60 +51,63 @@ export const Login: React.FC = () => {
           setErrorMessage(t('IncorrectUsernameOrPassword'));
         } else setErrorMessage(t('AnErrorOccuredPleaseTryAgain'));
         setShowNoti(true);
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
-    <Wrapper>
-      <Main>
-        <Image src={statisticIllutration} />
-        <Right>
-          <Head>
-            <img src={LOGO} alt="logo" width={48} />
-            <Title>{t('Login')}</Title>
-            <SubTitle>
-              {t('WelcomeBack.PleaseEnterAllInformationBelow.')}
-            </SubTitle>
-          </Head>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <StyledInput
-              label={t('Username')}
-              type="text"
-              variant="box"
-              {...register('username', { required: true })}
-              errorMessage={
-                errors?.username?.type === 'required'
-                  ? t('ThisIsRequiredField')
-                  : undefined
-              }
-            />
-            <StyledInput
-              label={t('Password')}
-              type="password"
-              variant="box"
-              {...register('password', { required: true })}
-              errorMessage={
-                errors?.password?.type === 'required'
-                  ? t('ThisIsRequiredField')
-                  : undefined
-              }
-            />
-            <div style={{ padding: '12px 0 32px 0' }}>
-              <Button block type="submit">
-                {t('Login')}
-              </Button>
-            </div>
-          </Form>
-        </Right>
-      </Main>
-      <Notification
-        type="error"
-        show={showNoti}
-        onClose={() => setShowNoti(false)}
-        title={t('Error')}
-        message={errorMessage}
-      />
-    </Wrapper>
+    <Loading isLoading={loading}>
+      <Wrapper>
+        <Main>
+          <Image src={statisticIllutration} />
+          <Right>
+            <Head>
+              <img src={LOGO} alt="logo" width={48} />
+              <Title>{t('Login')}</Title>
+              <SubTitle>
+                {t('WelcomeBack.PleaseEnterAllInformationBelow.')}
+              </SubTitle>
+            </Head>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <StyledInput
+                label={t('Username')}
+                type="text"
+                variant="box"
+                {...register('username', { required: true })}
+                errorMessage={
+                  errors?.username?.type === 'required'
+                    ? t('ThisIsRequiredField')
+                    : undefined
+                }
+              />
+              <StyledInput
+                label={t('Password')}
+                type="password"
+                variant="box"
+                {...register('password', { required: true })}
+                errorMessage={
+                  errors?.password?.type === 'required'
+                    ? t('ThisIsRequiredField')
+                    : undefined
+                }
+              />
+              <div style={{ padding: '12px 0 32px 0' }}>
+                <Button block type="submit">
+                  {t('Login')}
+                </Button>
+              </div>
+            </Form>
+          </Right>
+        </Main>
+        <Notification
+          type="error"
+          show={showNoti}
+          onClose={() => setShowNoti(false)}
+          title={t('Error')}
+          message={errorMessage}
+        />
+      </Wrapper>
+    </Loading>
   );
 };
 

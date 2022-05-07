@@ -3,7 +3,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { courseApi, serviceApi } from '../apis';
-import { Button, TAG_COLOR } from '../atoms';
+import { Button, Loading, TAG_COLOR } from '../atoms';
 import { OptionProps, Select, Table, TableProps } from '../components';
 import { cookPrediction } from '../helpers';
 import { ICourse, IPrediction } from '../interfaces';
@@ -14,7 +14,8 @@ type FormValues = {
 
 export const Predict: React.FC<{}> = () => {
   const { t } = useTranslation();
-  const [activeCourses, setActiveCourses] = useState<string[]>([])
+  const [activeCourses, setActiveCourses] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [courses, setCourses] = useState<ICourse[]>();
   const [predictions, setPredictions] = useState<IPrediction[]>([]);
@@ -30,10 +31,12 @@ export const Predict: React.FC<{}> = () => {
   const onSubmit: SubmitHandler<FormValues> = data => {
     if (!data.courses || data.courses.length === 0)
       setErrorMessage('ThisIsRequiredField');
+    setLoading(true);
     serviceApi
       .predict(data)
       .then(res => setPredictions(res.predictions))
-      .catch(error => console.log(error));
+      .catch(error => console.log(error))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -78,11 +81,15 @@ export const Predict: React.FC<{}> = () => {
         />
         <StyledButton type="submit">{t('Predict')}</StyledButton>
       </form>
-      {!!predictions.length ? (
-        <StyledTable {...predictionsTable} />
-      ) : (
-        <div style={{ height: 400 }} />
-      )}
+      <Loading isLoading={loading}>
+        {!!predictions.length ? (
+          <div style={{ minHeight: 400 }}>
+            <StyledTable {...predictionsTable} />
+          </div>
+        ) : (
+          <div style={{ height: 400 }} />
+        )}
+      </Loading>
     </>
   );
 };

@@ -179,6 +179,7 @@ const OptionMenu = styled.div<{ maxPerView?: number; show: boolean }>`
   border-radius: 4px;
   width: 100%;
   padding: 4px;
+  z-index: 9999;
   ${p =>
     p?.maxPerView
       ? `height: ${p.maxPerView * 40 + 8}px; 

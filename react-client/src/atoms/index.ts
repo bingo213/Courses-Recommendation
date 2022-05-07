@@ -6,3 +6,4 @@ export * from './Tag';
 export * from './Icons';
 export * from './Input';
 export * from './Notification';
+export * from './Loading';

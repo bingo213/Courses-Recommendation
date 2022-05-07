@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { userApi } from '../../apis';
-import { Button, COLORS, Input, NotificationProps } from '../../atoms';
+import { Button, COLORS, Input, Loading, NotificationProps } from '../../atoms';
 import { DatePicker } from '../../components';
 import { IUpdateRequest } from '../../interfaces';
 
@@ -22,6 +22,7 @@ export const InformationForm: React.FC<InformationFormProps> = ({
 }: InformationFormProps) => {
   const { t } = useTranslation();
   const [date, setDate] = useState<Date>();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -31,14 +32,18 @@ export const InformationForm: React.FC<InformationFormProps> = ({
   } = useForm<FormValues>();
 
   useEffect(() => {
-    userApi.getProfile().then(data => {
-      const student = data?.student;
-      setValue('fullName', student.fullName);
-      setValue('phoneNumber', student.phoneNumber);
-      setValue('email', student.email);
-      setValue('dateOfBirth', student.dateOfBirth);
-      setValue('className', student.className);
-    });
+    setLoading(true);
+    userApi
+      .getProfile()
+      .then(data => {
+        const student = data?.student;
+        setValue('fullName', student.fullName);
+        setValue('phoneNumber', student.phoneNumber);
+        setValue('email', student.email);
+        setValue('dateOfBirth', student.dateOfBirth);
+        setValue('className', student.className);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -47,6 +52,7 @@ export const InformationForm: React.FC<InformationFormProps> = ({
   }, [date]);
 
   const onSubmit = (data: FormValues) => {
+    setLoading(true);
     userApi
       .updateProfile(data)
       .then(() => {
@@ -59,61 +65,64 @@ export const InformationForm: React.FC<InformationFormProps> = ({
         setShowNoti(true);
         setMsg(t('AnErrorOccuredPleaseTryAgain'));
         setTypeNoti('error');
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
-    <>
-      <Title>{t('PersonalInfomation')}</Title>
-      <Form className="form-left" onSubmit={handleSubmit(onSubmit)}>
-        <StyledInput
-          label={t('FullName')}
-          type="text"
-          variant="box"
-          {...register('fullName', {
-            minLength: {
-              value: 8,
-              message: t('MinLengthIs{{min}}', { min: 8 }),
-            },
-            maxLength: {
-              value: 100,
-              message: t('MaxLengthIs{{max}}', { max: 100 }),
-            },
-          })}
-          errorMessage={errors.fullName?.message}
-        />
-        <DatePicker
-          label={t('DateOfBirth')}
-          {...register('dateOfBirth')}
-          date={date}
-          onSelectDate={setDate}
-          style={{ marginBottom: 32 }}
-        />
-        <StyledInput
-          label={t('ClassName')}
-          type="text"
-          variant="box"
-          {...register('className')}
-        />
-        <StyledInput
-          label={t('PhoneNumber')}
-          type="text"
-          variant="box"
-          {...register('phoneNumber')}
-        />
-        <StyledInput
-          label={t('PrivateEmail')}
-          type="text"
-          variant="box"
-          {...register('email')}
-        />
-        <div style={{ padding: '12px 0 32px 0' }}>
-          <Button block type="submit" disabled={!isDirty}>
-            {t('SaveInfo')}
-          </Button>
-        </div>
-      </Form>
-    </>
+    <Loading isLoading={loading}>
+      <>
+        <Title>{t('PersonalInfomation')}</Title>
+        <Form className="form-left" onSubmit={handleSubmit(onSubmit)}>
+          <StyledInput
+            label={t('FullName')}
+            type="text"
+            variant="box"
+            {...register('fullName', {
+              minLength: {
+                value: 8,
+                message: t('MinLengthIs{{min}}', { min: 8 }),
+              },
+              maxLength: {
+                value: 100,
+                message: t('MaxLengthIs{{max}}', { max: 100 }),
+              },
+            })}
+            errorMessage={errors.fullName?.message}
+          />
+          <DatePicker
+            label={t('DateOfBirth')}
+            {...register('dateOfBirth')}
+            date={date}
+            onSelectDate={setDate}
+            style={{ marginBottom: 32 }}
+          />
+          <StyledInput
+            label={t('ClassName')}
+            type="text"
+            variant="box"
+            {...register('className')}
+          />
+          <StyledInput
+            label={t('PhoneNumber')}
+            type="text"
+            variant="box"
+            {...register('phoneNumber')}
+          />
+          <StyledInput
+            label={t('PrivateEmail')}
+            type="text"
+            variant="box"
+            {...register('email')}
+          />
+          <div style={{ padding: '12px 0 32px 0' }}>
+            <Button block type="submit" disabled={!isDirty}>
+              {t('SaveInfo')}
+            </Button>
+          </div>
+        </Form>
+      </>
+    </Loading>
   );
 };
 

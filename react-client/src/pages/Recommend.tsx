@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { orientationApi } from '../apis';
 import { serviceApi } from '../apis';
-import { Button, Input } from '../atoms';
+import { Button, Input, Loading } from '../atoms';
 import { OptionProps, Select, Table, TableProps } from '../components';
 import {
   CookedOrientationProps,
@@ -21,7 +21,7 @@ type FormValues = {
 export const Recommend: React.FC = () => {
   const { t } = useTranslation();
   const [activeOrientations, setActiveOrientations] = useState<string[]>([]);
-
+  const [loading, setLoading] = useState(false);
   const [orientations, setOrientations] = useState<CookedOrientationProps[]>();
   const [recommendations, setRecommendations] = useState<IRecommendation[]>([]);
   const {
@@ -46,10 +46,12 @@ export const Recommend: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<FormValues> = data => {
+    setLoading(true);
     serviceApi
       .recommend(data)
       .then(res => setRecommendations(res.recommendations))
-      .catch(error => console.log(error));
+      .catch(error => console.log(error))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -125,11 +127,15 @@ export const Recommend: React.FC = () => {
           {t('Recommend')}
         </Button>
       </StyledForm>
-      {!!recommendations.length ? (
-        <Table {...recommendationsTable} />
-      ) : (
-        <div style={{ height: 300 }} />
-      )}
+      <Loading isLoading={loading}>
+        {!!recommendations.length ? (
+          <div style={{ minHeight: 300 }}>
+            <Table {...recommendationsTable} />
+          </div>
+        ) : (
+          <div style={{ height: 300 }} />
+        )}
+      </Loading>
     </>
   );
 };

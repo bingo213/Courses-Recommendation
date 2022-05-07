@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { userApi } from '../../apis';
-import { Button, COLORS, Input, NotificationProps } from '../../atoms';
+import { Button, COLORS, Input, Loading, NotificationProps } from '../../atoms';
 
 type FormValues = { password: string; repass: string };
 
@@ -19,6 +19,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({
   setTypeNoti,
 }: PasswordFormProps) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -42,6 +43,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({
   };
 
   const onSubmit = (data: FormValues) => {
+    setLoading(true);
     userApi
       .changePassword(data)
       .then(() => {
@@ -54,47 +56,50 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({
         setShowNoti(true);
         setMsg(t('AnErrorOccuredPleaseTryAgain'));
         setTypeNoti('error');
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
-    <>
-      <Title>{t('ChangePassword')}</Title>
-      <Form className="form-right" onSubmit={handleSubmit(onSubmit)}>
-        <StyledInput
-          label={t('EnterNewPassword')}
-          type="password"
-          variant="box"
-          {...register('password', {
-            required: { value: true, message: t('ThisIsRequiredField') },
-            maxLength: {
-              value: 127,
-              message: t('MaxLengthIs{{max}}', { max: 127 }),
-            },
-            minLength: {
-              value: 8,
-              message: t('MinLengthIs{{min}}', { min: 8 }),
-            },
-          })}
-          errorMessage={errors.password?.message}
-        />
-        <StyledInput
-          label={t('Re-enterPassword')}
-          type="password"
-          variant="box"
-          {...register('repass', {
-            required: true,
-            validate: () => getValues('password') === getValues('repass'),
-          })}
-          errorMessage={getRepassErrorMessage()}
-        />
-        <div style={{ padding: '12px 0 32px 0' }}>
-          <Button block type="submit" disabled={!isDirty}>
-            {t('ChangePassword')}
-          </Button>
-        </div>
-      </Form>
-    </>
+    <Loading isLoading={loading}>
+      <>
+        <Title>{t('ChangePassword')}</Title>
+        <Form className="form-right" onSubmit={handleSubmit(onSubmit)}>
+          <StyledInput
+            label={t('EnterNewPassword')}
+            type="password"
+            variant="box"
+            {...register('password', {
+              required: { value: true, message: t('ThisIsRequiredField') },
+              maxLength: {
+                value: 127,
+                message: t('MaxLengthIs{{max}}', { max: 127 }),
+              },
+              minLength: {
+                value: 8,
+                message: t('MinLengthIs{{min}}', { min: 8 }),
+              },
+            })}
+            errorMessage={errors.password?.message}
+          />
+          <StyledInput
+            label={t('Re-enterPassword')}
+            type="password"
+            variant="box"
+            {...register('repass', {
+              required: true,
+              validate: () => getValues('password') === getValues('repass'),
+            })}
+            errorMessage={getRepassErrorMessage()}
+          />
+          <div style={{ padding: '12px 0 32px 0' }}>
+            <Button block type="submit" disabled={!isDirty}>
+              {t('ChangePassword')}
+            </Button>
+          </div>
+        </Form>
+      </>
+    </Loading>
   );
 };
 
