@@ -23,6 +23,7 @@ export const InformationForm: React.FC<InformationFormProps> = ({
   const { t } = useTranslation();
   const [date, setDate] = useState<Date>();
   const [loading, setLoading] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
   const {
     register,
@@ -40,7 +41,7 @@ export const InformationForm: React.FC<InformationFormProps> = ({
         setValue('fullName', student.fullName);
         setValue('phoneNumber', student.phoneNumber);
         setValue('email', student.email);
-        setDate(new Date(student?.dateOfBirth));
+        student?.dateOfBirth && setDate(new Date(student.dateOfBirth));
         setValue('className', student.className);
       })
       .finally(() => setLoading(false));
@@ -48,7 +49,8 @@ export const InformationForm: React.FC<InformationFormProps> = ({
 
   useEffect(() => {
     if (date)
-      setValue('dateOfBirth', date.toDateString(), { shouldDirty: true });
+      setValue('dateOfBirth', date.toDateString(), { shouldDirty: dirty });
+    else setValue('dateOfBirth', '', { shouldDirty: dirty });
   }, [date]);
 
   const onSubmit = (data: FormValues) => {
@@ -66,7 +68,11 @@ export const InformationForm: React.FC<InformationFormProps> = ({
         setMsg(t('AnErrorOccuredPleaseTryAgain'));
         setTypeNoti('error');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setDirty(false);
+        
+      });
   };
 
   return (
@@ -94,7 +100,10 @@ export const InformationForm: React.FC<InformationFormProps> = ({
             label={t('DateOfBirth')}
             {...register('dateOfBirth')}
             date={date}
-            onSelectDate={setDate}
+            onSelectDate={(d: Date) => {
+              setDate(d);
+              setDirty(true);
+            }}
             style={{ marginBottom: 32 }}
           />
           <StyledInput
@@ -116,7 +125,7 @@ export const InformationForm: React.FC<InformationFormProps> = ({
             {...register('email')}
           />
           <div style={{ padding: '12px 0 32px 0' }}>
-            <Button block type="submit" disabled={!isDirty}>
+            <Button block type="submit" disabled={!dirty}>
               {t('SaveInfo')}
             </Button>
           </div>
