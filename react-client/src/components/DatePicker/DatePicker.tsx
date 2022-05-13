@@ -11,24 +11,23 @@ export interface DatePickerProps {
   style?: CSSProperties;
 }
 
-export const MyDatePicker = React.forwardRef<
-  DatePickerProps,
-  any
->(({label, date, onSelectDate, style}: DatePickerProps, ref) => {
-  return (
-    <Wrapper ref={ref as any} style={style}>
-      <Label>{label}</Label>
-      <DatePicker
-        dateFormat="dd/MM/yyyy"
-        selected={date}
-        onChange={date => {
-          onSelectDate(date as Date);
-        }}
-        
-      />
-    </Wrapper>
-  );
-});
+export const MyDatePicker = React.forwardRef<DatePickerProps, any>(
+  ({ label, date, onSelectDate, style }: DatePickerProps, ref) => {
+    console.log(date)
+    return (
+      <Wrapper ref={ref as any} style={style}>
+        <Label>{label}</Label>
+        <DatePicker
+          dateFormat="dd/MM/yyyy"
+          selected={date}
+          onChange={date => {
+            onSelectDate(date as Date);
+          }}
+        />
+      </Wrapper>
+    );
+  }
+);
 
 const Wrapper = styled.div`
   .react-datepicker__triangle {

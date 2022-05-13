@@ -40,7 +40,7 @@ export const InformationForm: React.FC<InformationFormProps> = ({
         setValue('fullName', student.fullName);
         setValue('phoneNumber', student.phoneNumber);
         setValue('email', student.email);
-        setValue('dateOfBirth', student.dateOfBirth);
+        setDate(new Date(student?.dateOfBirth));
         setValue('className', student.className);
       })
       .finally(() => setLoading(false));
