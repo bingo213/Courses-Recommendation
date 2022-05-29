@@ -1,4 +1,4 @@
-# Intelligent advisory system to assist students in choosing subjects
+# Intelligent advisory system to assist students in choosing courses
 Features include:
 - Recommend elective courses
 - Predict grade
